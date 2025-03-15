@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "829828686111",
+    "project_id": "agrimata-9e932",
+    "storage_bucket": "agrimata-9e932.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829828686111:android:3bb571e11c6bd95a86502a",
+        "android_client_info": {
+          "package_name": "com.example.agrimata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfys6MJ-a1JKpDRdX1KeFh0wefIw8sG3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
