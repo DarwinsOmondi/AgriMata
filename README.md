@@ -43,7 +43,7 @@ AgriMata/
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/AgriMata.git
+   git clone https://github.com/DarwinsOmondi/AgriMata.git
    cd AgriMata
    ```
 
