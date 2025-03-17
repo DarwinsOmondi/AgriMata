@@ -3,7 +3,6 @@
 AgriMata is a mobile application designed to connect farmers directly with buyers and provide agricultural insights, weather updates, and an interactive marketplace for farm products.
 
 ## 📌 Features
-
 - 🔑 **Authentication**: Firebase Authentication for secure user login.
 - 🏪 **Marketplace**: Farmers can list products for sale, and buyers can browse and purchase.
 - 🌦 **Weather Updates**: Real-time weather data using OpenWeatherMap API.
