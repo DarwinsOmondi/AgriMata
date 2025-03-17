@@ -30,28 +30,27 @@ class BuyerMarketplaceViewModel : ViewModel() {
         }
     }
 
-//    fun searchProducts(query: String) {
-//        viewModelScope.launch {
-//            try {
-//                _orderState.value = "Searching Products..."
-//
-//                val filteredProducts = client.postgrest["farmproducts"].select {
-//                    or(
+    fun searchProducts(query: String) {
+        viewModelScope.launch {
+            try {
+                _orderState.value = "Searching Products..."
+
+                val filteredProducts = client.postgrest["farmproducts"].select {
+                    eq("name", query)
 //                        listOf(
 //                            "name.ilike.%$query%",
 //                            "price::text.ilike.%$query%",
 //                            "location.ilike.%$query%"
-//                        )
 //                    )
-//                }.decodeList<FarmerProduct>()
-//
-//                _products.value = filteredProducts
-//                _orderState.value = "Search Completed"
-//            } catch (e: Exception) {
-//                _orderState.value = "Error: ${e.message}"
-//            }
-//        }
-//    }
+                }.decodeList<FarmerProduct>()
+
+                _products.value = filteredProducts
+                _orderState.value = "Search Completed"
+            } catch (e: Exception) {
+                _orderState.value = "Error: ${e.message}"
+            }
+        }
+    }
 
     fun placeOrder(userId: String, productId: String, quantity: Int) {
         viewModelScope.launch {

@@ -10,6 +10,7 @@ import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.model.UserState
 import com.example.agrimata.network.SuparBaseClient.client
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -86,7 +87,11 @@ class FarmerProductViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _productUploadState.value = "Fetching Products..."
-                val products = client.postgrest["farmproducts"].select().decodeList<FarmerProduct>()
+                val products = client.postgrest["farmproducts"].select(
+                    columns = Columns.list("name", "description", "category",
+                            "pricePerUnit", "unit", "stockQuantity", "location",
+                            "imageUrl", "isAvailable")
+                ).decodeList<FarmerProduct>()
                 _farmerProducts.value = products
                 _productUploadState.value = "Products Loaded Successfully"
             } catch (e: Exception) {
@@ -113,37 +118,36 @@ class FarmerProductViewModel : ViewModel() {
             }
         }
     }
-//
-//
-//    fun updateFarmerProduct(
-//        context: Context,
-//        updatedProduct: FarmerProduct,
-//        newImageUri: Uri? = null
-//    ) {
-//        viewModelScope.launch {
-//            try {
-//                _productUploadState.value = "Updating Product..."
-//
-//                var imageUrl = updatedProduct.imageUrl // Keep old image if no new image is provided
-//                if (newImageUri != null) {
-//                    // Upload new image
-//                    imageUrl = uploadImageToSupabase(context, newImageUri)
-//
-//                    // Delete old image from storage
-//                    val oldImageFileName = updatedProduct.imageUrl.substringAfterLast("/")
-//                    client.storage[bucketName].delete(oldImageFileName)
-//                }
-//
-//                // Update product in database
-//                val productToUpdate = updatedProduct.copy(imageUrl = imageUrl)
-//                client.postgrest["farmproducts"].update(productToUpdate) {
-//                    filter { eq("productId", updatedProduct.productId) }
-//                }
-//
-//                _productUploadState.value = "Product Updated Successfully"
-//            } catch (e: Exception) {
-//                _productUploadState.value = "Error: ${e.message}"
-//            }
-//        }
-//    }
+
+
+    fun updateFarmerProduct(
+        context: Context,
+        updatedProduct: FarmerProduct,
+        newImageUri: Uri? = null
+    ) {
+        viewModelScope.launch {
+            try {
+                _productUploadState.value = "Updating Product..."
+
+                var imageUrl = updatedProduct.imageUrl
+                if (newImageUri != null) {
+                    imageUrl = uploadImageToSupabase(context, newImageUri)
+
+                    // Delete old image from storage
+                    val oldImageFileName = updatedProduct.imageUrl.substringAfterLast("/")
+                    client.storage[bucketName].delete(oldImageFileName)
+                }
+
+                // Update product in database
+                val productToUpdate = updatedProduct.copy(imageUrl = imageUrl)
+                client.postgrest["farmproducts"].update(productToUpdate) {
+                        eq("productId", updatedProduct.productId)
+                }
+
+                _productUploadState.value = "Product Updated Successfully"
+            } catch (e: Exception) {
+                _productUploadState.value = "Error: ${e.message}"
+            }
+        }
+    }
 }

@@ -44,7 +44,7 @@ fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: FarmersAuthViewMo
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            authViewModel.SignUpFarmer(name, email, password, phone)
+            authViewModel.signUpFarmer(name, email, password, phone)
             Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
         }) {
             Text("Sign Up")

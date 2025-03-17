@@ -11,7 +11,7 @@ import io.github.jan.supabase.gotrue.gotrue
 import io.github.jan.supabase.gotrue.user.UserInfo
 import kotlinx.coroutines.launch
 
-class UserProfileViewModel : ViewModel() {
+class ClientProfileViewModel : ViewModel() {
     private val _userProfileState = mutableStateOf<UserProfileState>(UserProfileState.Loading)
     val userProfileState:State<UserProfileState> = _userProfileState
 
@@ -27,7 +27,7 @@ class UserProfileViewModel : ViewModel() {
                     _userProfileState.value = UserProfileState.Success(
                         name = user.userMetadata?.get("name")?.toString() ?: "Unknown",
                         email = user.email ?: "No Email",
-                        phone = user.userMetadata?.get("phone")?.toString() ?: "No Phone",
+                        phone = (user.userMetadata?.get("phone")?: "No Phone").toString(),
                         imageUrl = user.userMetadata?.get("imageUrl")?.toString() ?: ""
                     )
                 } else {
