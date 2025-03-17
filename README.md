@@ -30,7 +30,7 @@ AgriMata/
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/com/example/agrimata/
-│   │   │   │   ├── ui/          # UI Components (Jetpack Compose)
+│   │   │   │   ├── screens/      # UI Components (Jetpack Compose)
 │   │   │   │   ├── viewmodel/    # ViewModel Layer (Handles Logic)
 │   │   │   │   ├── repository/   # Repository Layer (Handles Data Fetching)
 │   │   │   │   ├── model/        # Data Models (FarmerProduct, User, etc.)
