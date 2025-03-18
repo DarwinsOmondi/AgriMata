@@ -1,13 +1,23 @@
 package com.example.agrimata.viewmodels
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.io.IOException
+import java.util.Locale
 
 class PermissionViewModel: ViewModel() {
 
@@ -54,5 +64,48 @@ class PermissionViewModel: ViewModel() {
                 CAMERA_PERMISSION_CODE
             )
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getUserLocation(context: Context, onLocationReceived: (Location?) -> Unit) {
+        if (!checkUserLocationPermission(context)) {
+            requestUserLocationPermission(context)
+            return
+        }
+
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationProvider = LocationManager.GPS_PROVIDER
+
+        if (locationManager.isProviderEnabled(locationProvider)) {
+            val location = locationManager.getLastKnownLocation(locationProvider)
+            viewModelScope.launch {
+                delay(2000)
+                onLocationReceived(location)
+            }
+        } else {
+            Toast.makeText(context, "Enable GPS for location access", Toast.LENGTH_SHORT).show()
+            onLocationReceived(null)
+        }
+    }
+
+    fun decodeLocation(context: Context, location: Location?): String {
+        if (location == null) return "Location not available"
+
+        val latitude = location.latitude
+        val longitude = location.longitude
+        var addressText = "Lat: $latitude, Lng: $longitude"
+
+        val geocoder = Geocoder(context, Locale.getDefault())
+        try {
+            val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+            if (!addresses.isNullOrEmpty()) {
+                val address = addresses[0]
+                addressText = address.getAddressLine(0) ?: addressText
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return addressText
     }
 }

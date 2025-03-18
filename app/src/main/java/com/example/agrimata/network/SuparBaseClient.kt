@@ -14,5 +14,6 @@ object SuparBaseClient {
         install(GoTrue)
         install(Postgrest)
         install(Storage)
+       // install(Auth)
     }
 }

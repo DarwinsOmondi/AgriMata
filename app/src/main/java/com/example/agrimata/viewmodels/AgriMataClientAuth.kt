@@ -1,6 +1,5 @@
 package com.example.agrimata.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-class FarmersAuthViewModel : ViewModel() {
+class AgriMataClientAuth(): ViewModel() {
     private val _userState = mutableStateOf<UserState>(UserState.Loading)
     val userState: State<UserState> = _userState
 
@@ -22,7 +21,7 @@ class FarmersAuthViewModel : ViewModel() {
         observeSession()
     }
 
-    fun signUpFarmer(userName: String, userEmail: String, userPassword: String, userPhone: String?) {
+    fun SignUpUser(userName: String, userEmail: String, userPassword: String, userPhone: String?) {
         viewModelScope.launch {
             try {
                 client.gotrue.signUpWith(Email) {
@@ -33,56 +32,40 @@ class FarmersAuthViewModel : ViewModel() {
                         if (!userPhone.isNullOrBlank()) put("phone", JsonPrimitive(userPhone))
                     }
                 }
-                _userState.value = UserState.Success("User created successfully")
+                _userState.value = UserState.Success("User Created Successfully")
+
             } catch (e: Exception) {
-                Log.e("SupabaseSignUp", "Error: ${e.message}")
-                _userState.value = UserState.Error("Sign-up failed: ${e.localizedMessage}")
+                _userState.value = UserState.Error(e.message.toString())
             }
         }
     }
 
-    fun signInFarmer(email: String, password: String) {
+
+    fun SignInUser(email: String, password: String) {
         viewModelScope.launch {
             try {
                 client.gotrue.loginWith(Email) {
                     this.email = email
                     this.password = password
                 }
-                _userState.value = UserState.Success("User logged in successfully")
+                _userState.value = UserState.Success("User Signed In Successfully")
+
             } catch (e: Exception) {
-                Log.e("SupabaseSignIn", "Error: ${e.message}")
-                _userState.value = UserState.Error("Sign-in failed: ${e.localizedMessage}")
+                _userState.value = UserState.Error(e.message.toString())
             }
         }
     }
-
-    fun logOut() {
+    fun LogOut() {
         viewModelScope.launch {
             try {
                 client.gotrue.logout()
-                _userState.value = UserState.Success("User logged out successfully")
+                _userState.value = UserState.Success("User Logged Out Successfully")
+
             } catch (e: Exception) {
-                Log.e("SupabaseLogOut", "Error: ${e.message}")
-                _userState.value = UserState.Error("Logout failed: ${e.localizedMessage}")
+                _userState.value = UserState.Error(e.message.toString())
             }
         }
     }
-
-//    fun resetPassword(email: String,password: String) {
-//        viewModelScope.launch {
-//            try {
-//                client.auth.resetPasswordForEmail(email)
-//                client.auth.updateUser {
-//                    this.password = password
-//                }
-//                _userState.value = UserState.Success("Password reset email sent successfully")
-//            }catch (e: Exception){
-//                Log.e("SupabaseResetPassword", "Error: ${e.message}")
-//                _userState.value = UserState.Error("Reset password failed: ${e.localizedMessage}")
-//            }
-//        }
-//    }
-
     fun checkUserLoggedIn() {
         viewModelScope.launch {
             try {
@@ -97,8 +80,6 @@ class FarmersAuthViewModel : ViewModel() {
             }
         }
     }
-
-
     private fun observeSession() {
         viewModelScope.launch {
             client.gotrue.sessionStatus.collectLatest { session ->
@@ -110,4 +91,17 @@ class FarmersAuthViewModel : ViewModel() {
             }
         }
     }
+
+//    fun ResetPassword(email: String,password: String) {
+//        viewModelScope.launch {
+//            try {
+//                client.auth.resetPasswordForEmail(email)
+//                client.auth.updateUser {
+//                    this.password = password
+//                }
+//            } catch (e: Exception) {
+//                _userState.value = UserState.Error(e.message.toString())
+//            }
+//        }
+//    }
 }

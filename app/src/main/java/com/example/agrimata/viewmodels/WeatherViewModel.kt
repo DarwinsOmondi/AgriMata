@@ -11,6 +11,10 @@ class WeatherViewModel : ViewModel() {
     var weatherState = mutableStateOf<WeatherResponse?>(null)
     var errorMessage = mutableStateOf<String?>(null)
 
+    init {
+        fetchWeather()
+    }
+
     fun fetchWeather() {
         viewModelScope.launch {
             try {

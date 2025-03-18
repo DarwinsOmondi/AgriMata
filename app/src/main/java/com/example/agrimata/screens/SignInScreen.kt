@@ -1,19 +1,33 @@
 package com.example.agrimata.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -26,21 +40,31 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.agrimata.model.UserState
+import com.example.agrimata.viewmodels.AgriMataClientAuth
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.nio.file.WatchEvent
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignInScreen(onNavigateToSignUp: () -> Unit,onSignInSuccess: () -> Unit,authViewModel: FarmersAuthViewModel) {
+fun SignInScreen(
+    onNavigateToSignUp: () -> Unit,
+    onSignInSuccess: () -> Unit,
+    authViewModel: AgriMataClientAuth,
+) {
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -48,7 +72,13 @@ fun SignInScreen(onNavigateToSignUp: () -> Unit,onSignInSuccess: () -> Unit,auth
     val userState = authViewModel.userState.value
     var error by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    var togglePasswordVisibility by remember { mutableStateOf(false) }
 
+    // Use MaterialTheme color scheme
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val textColor = MaterialTheme.colorScheme.secondary
 
     LaunchedEffect(Unit) {
         isLoading = true
@@ -56,89 +86,169 @@ fun SignInScreen(onNavigateToSignUp: () -> Unit,onSignInSuccess: () -> Unit,auth
         isLoading = false
     }
 
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(backgroundColor),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .background(primaryColor)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingBasket,
+                            contentDescription = "shoppingBasket",
+                            tint = secondaryColor,
 
-    Column(
-        Modifier.fillMaxWidth()
-        .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Sign In", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor =Color.Black,
-                focusedBorderColor = Color.DarkGray,
-                unfocusedBorderColor = Color.Black
-            ),
-        )
-        OutlinedTextField(
-            value = password,onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor =Color.Black,
-                focusedBorderColor = Color.DarkGray,
-                unfocusedBorderColor = Color.Black
-            ),
-        )
+                        Text(
+                            text = "AgriMata",
+                            color = textColor,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 1.dp)
+                        )
+                    }
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    Box(Modifier.align(Alignment.CenterHorizontally)){
+                        Icon(
+                            imageVector = Icons.Default.ShoppingBasket,
+                            contentDescription = "shoppingBasket",
+                            tint = secondaryColor,
+                            modifier = Modifier.align(Alignment.Center)
+                                .width(100.dp)
+                                .height(100.dp)
+                        )
+                    }
 
-
-
-        Button(
-            onClick = {
-                scope.launch { 
-                    if (email.isNotBlank()&& password.isNotBlank()) {
-                        authViewModel.signInFarmer(email, password)
-                        Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
-                        if (userState is UserState.Success){
-                            onSignInSuccess()
-                        }else{
-                            Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
-                        }
-                    }else{
-                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Ensuring fair trade, real-time insights, and a thriving agricultural future.",
+                            color = textColor, // Dynamic text color
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
-        },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-            ) {
-            if (isLoading){
-                CircularProgressIndicator()
-            }else{
-                Text("Sign In")
             }
-        }
-        Row {
-            Text(
-                "Don't have an account?"
-                ,style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 14.dp))
-            Spacer(modifier = Modifier.padding(4.dp))
-            TextButton(onClick = onNavigateToSignUp) {
-                Text( "Sign Up")
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .background(backgroundColor)
+                    .padding(16.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Spacer(modifier = Modifier.weight(.5f))
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email", color = textColor) },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = secondaryColor,
+                            unfocusedTextColor = secondaryColor
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password", color = textColor) },
+                        visualTransformation = if (!togglePasswordVisibility) PasswordVisualTransformation() else VisualTransformation.None,
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = textColor,
+                            unfocusedTextColor = textColor
+                        ),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    togglePasswordVisibility = !togglePasswordVisibility
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (togglePasswordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = "Toggle Password Visibility",
+                                    tint = textColor
+                                )
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.weight(.5f))
+
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                if (email.isNotBlank() && password.isNotBlank()) {
+                                    authViewModel.SignInUser(email, password)
+                                    Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
+                                    if (userState is UserState.Success) {
+                                        onSignInSuccess()
+                                    } else {
+                                        scope.launch {
+                                            delay(2000)
+                                            Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(primaryColor)
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator()
+                        } else {
+                            Text("Sign In", color = textColor)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    TextButton(onClick = { onNavigateToSignUp() }) {
+                        Text("Create an Account", style = MaterialTheme.typography.bodyMedium, color = textColor)
+                    }
+
+                    if (error.isNotEmpty()) {
+                        Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
             }
         }
     }
 }
 
+
+
 @Preview(showBackground = true)
 @Composable
 fun SignInScreenPreview() {
-    SignInScreen(onNavigateToSignUp = {}, onSignInSuccess = {}, authViewModel = FarmersAuthViewModel())
+    SignInScreen(onNavigateToSignUp = {}, onSignInSuccess = {}, authViewModel = AgriMataClientAuth())
 }

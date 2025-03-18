@@ -38,6 +38,7 @@ import com.example.agrimata.model.UserState
 import com.example.agrimata.screens.ClientProfileScreen
 import com.example.agrimata.screens.SignInScreen
 import com.example.agrimata.screens.SignUpScreen
+import com.example.agrimata.viewmodels.AgriMataClientAuth
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import java.util.*
 
@@ -58,7 +59,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AgriMata(modifier: Modifier) {
     val navController = rememberNavController()
-    val authViewModel: FarmersAuthViewModel = viewModel()
+    val authViewModel: AgriMataClientAuth = viewModel()
     var startDestination by remember { mutableStateOf("signin") }
 
     LaunchedEffect(Unit) {
@@ -67,7 +68,7 @@ fun AgriMata(modifier: Modifier) {
 
     val userState by authViewModel.userState
     LaunchedEffect(userState) {
-        startDestination = if (userState is UserState.Success) "product" else "signin"
+        startDestination = if (userState is UserState.Success) "clientprofile" else "signin"
     }
 
     NavHost(
@@ -93,7 +94,7 @@ fun AgriMata(modifier: Modifier) {
         }
         composable("clientprofile"){
             ClientProfileScreen(
-                onLogOutSuccess = { navController.navigate("signin")}
+                navController = navController,
             )
         }
     }
@@ -102,6 +103,7 @@ fun AgriMata(modifier: Modifier) {
 @Composable
 fun ProductScreen(
     farmerViewModel: FarmerProductViewModel = viewModel(),
+    authViewModel: AgriMataClientAuth = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -134,6 +136,13 @@ fun ProductScreen(
 
         Text(productUploadState, color = Color.Blue, fontSize = 14.sp)
         Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = {
+                authViewModel.LogOut()
+            }
+        ) {
+            Text("Log out")
+        }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
