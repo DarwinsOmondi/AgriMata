@@ -87,4 +87,3 @@ This project is licensed under the MIT License.
 
 ---
 **🌱 AgriMata - Empowering Farmers, Connecting Buyers!**
-
