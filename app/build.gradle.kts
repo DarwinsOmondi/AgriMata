@@ -78,9 +78,9 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt:$supabaseVersion")
     implementation("io.github.jan-tennert.supabase:realtime-kt:$supabaseVersion")
     implementation("io.github.jan-tennert.supabase:gotrue-kt:$supabaseVersion")
+    //implementation("io.github.jan-tennert.supabase:auth-kt:3.1.3")
     implementation("io.ktor:ktor-client-cio:2.3.4")
 
-   // implementation("io.github.jan-tennert.supabase:auth-kt:3.1.3")
 
     // Navigation Components
     implementation("androidx.navigation:navigation-compose:2.8.9")

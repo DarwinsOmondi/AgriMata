@@ -142,7 +142,7 @@ fun SignInScreen(
                     ) {
                         Text(
                             text = "Ensuring fair trade, real-time insights, and a thriving agricultural future.",
-                            color = textColor, // Dynamic text color
+                            color = textColor,
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold
                         )

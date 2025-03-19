@@ -1,5 +1,13 @@
 package com.example.agrimata.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
@@ -11,6 +19,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -30,43 +43,54 @@ val listOfBottomNavigationItems = listOf(
     BottomNavigationBar.BottomNavigationItem.Profile
 )
 
-
-
 @Composable
-fun BottomNavigationBarUi(navController: NavHostController){
+fun BottomNavigationBarUi(navController: NavHostController) {
 
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
-    val backgroundColor = MaterialTheme.colorScheme.background
-    val textColor = MaterialTheme.colorScheme.onBackground
-
+    val colorScheme = MaterialTheme.colorScheme
     val currentScreen = navController.currentBackStackEntry?.destination?.route
-    NavigationBar(
-        containerColor = backgroundColor,
-        contentColor = textColor,
-        tonalElevation = 5.dp,
 
-    ){
-        listOfBottomNavigationItems.forEach{ screens ->
-            NavigationBarItem(
-                selected = currentScreen == screens.broute,
-                onClick = {
-                    navController.navigate(screens.broute){
-                        navController.graph.startDestinationRoute?.let {
-                            popUpTo(it){
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .offset(y = (0).dp)
+            .padding(horizontal = 12.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .background(colorScheme.primary),
+        contentAlignment = Alignment.Center
+    )
+ {
+        NavigationBar(
+            containerColor = colorScheme.primary,
+            contentColor = colorScheme.onPrimary
+        ) {
+            listOfBottomNavigationItems.forEach { screen ->
+                NavigationBarItem(
+                    selected = currentScreen == screen.broute,
+                    onClick = {
+                        navController.navigate(screen.broute) {
+                            popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
                             launchSingleTop = true
                             restoreState = true
                         }
+                    },
+                    label = {
+                        Text(
+                            text = screen.btitle,
+                            color = if (currentScreen == screen.broute) colorScheme.onPrimary else colorScheme.onSecondary
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = screen.icon,
+                            contentDescription = screen.btitle,
+                            tint = if (currentScreen == screen.broute) colorScheme.onPrimary else colorScheme.onSecondary
+                        )
                     }
-                },
-                label = { Text(text = screens.btitle, color = if (currentScreen == screens.broute) primaryColor else secondaryColor) },
-                icon = {
-                    Icon(imageVector = screens.icon,
-                        contentDescription = screens.btitle,
-                        tint = if (currentScreen == screens.broute) primaryColor else secondaryColor)}
-            )
+                )
+            }
         }
     }
 }

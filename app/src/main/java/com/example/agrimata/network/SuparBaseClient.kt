@@ -1,6 +1,7 @@
 package com.example.agrimata.network
 
 import com.example.agrimata.constants.keys
+
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.GoTrue
 import io.github.jan.supabase.postgrest.Postgrest
@@ -11,9 +12,9 @@ object SuparBaseClient {
         supabaseUrl = keys.suparbaseUrl,
         supabaseKey = keys.suparbaseKey
     ){
+       // install(Auth)
         install(GoTrue)
         install(Postgrest)
         install(Storage)
-       // install(Auth)
     }
 }

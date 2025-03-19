@@ -149,6 +149,7 @@ fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: AgriMataClientAut
                         .padding(16.dp)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                         OutlinedTextField(
                             value = name,
                             onValueChange = { name = it },
@@ -223,7 +224,7 @@ fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: AgriMataClientAut
                         } else {
                             Button(onClick = {
                                 scope.launch {
-                                    if (name.isNotBlank() || email.isNotBlank() || password.isNotBlank() || phone.isNotBlank()) {
+                                    if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && phone.isNotBlank()) {
                                         authViewModel.SignUpUser(name, email, password, phone)
                                         Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
                                         if (userState is UserState.Success) {

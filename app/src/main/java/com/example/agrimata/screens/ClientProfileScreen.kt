@@ -2,21 +2,30 @@ package com.example.agrimata.screens
 
 import android.content.Context
 import android.location.Location
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,14 +47,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import com.example.agrimata.R
 import com.example.agrimata.components.BottomNavigationBarUi
 import com.example.agrimata.components.DrawerMenu
 import com.example.agrimata.model.UserProfileState
+import com.example.agrimata.viewmodels.AgriMataClientAuth
 import com.example.agrimata.viewmodels.ClientProfileViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
 import kotlinx.coroutines.launch
@@ -57,11 +70,13 @@ fun ClientProfileScreen(
 ) {
     val profileViewModel: ClientProfileViewModel = viewModel()
     val permissionViewModel: PermissionViewModel = viewModel()
+    val viewmodel: AgriMataClientAuth = viewModel()
     val userProfileState = profileViewModel.userProfileState.value
     val context = LocalContext.current
     var userLocation by remember { mutableStateOf<Location?>(null) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val profileImage = viewmodel.profileImage.value
 
 
     // Use MaterialTheme color scheme
@@ -117,20 +132,43 @@ fun ClientProfileScreen(
                     .background(backgroundColor),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(16.dp))
                 when (userProfileState) {
                     is UserProfileState.Loading -> {
                         LoadingState()
                     }
 
                     is UserProfileState.Success -> {
+
+                        if (profileImage != null) {
+                            AsyncImage(
+                                model = profileImage,
+                                contentDescription = "Profile Image",
+                                modifier = Modifier
+                                    .size(150.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            AsyncImage(
+                                model = R.drawable.baseline_person_24,
+                                contentDescription = "Profile Placeholder",
+                                modifier = Modifier
+                                    .size(150.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                         ProfileInfo(
                             name = userProfileState.name,
                             email = userProfileState.email,
                             phone = userProfileState.phone,
-                            imageUrl = userProfileState.imageUrl
+                            imageUrl = userProfileState.imageUrl,
+                            userLocation,
+                            permissionViewModel,
+                            context
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        LocationInfo(userLocation, permissionViewModel, context)
                     }
 
                     is UserProfileState.Error -> {
@@ -156,7 +194,8 @@ fun LoadingState() {
 }
 
 @Composable
-fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String) {
+fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,userLocation: Location?, permissionViewModel: PermissionViewModel = viewModel(), context: Context) {
+    val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
     val textColor = MaterialTheme.colorScheme.secondary
     Column(
         modifier = Modifier
@@ -165,17 +204,68 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = "Profile Image",
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Text(text = "Name: $name", color = textColor)
-        Text(text = "Email: $email", color = textColor)
-        Text(text = "Phone: $phone",color = textColor)
+        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Profile Icon",
+                tint = textColor
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text("Name", color = textColor)
+                Text(text = name, color = textColor)
+            }
+        }
+        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Icon(
+                imageVector = Icons.Filled.Email,
+                contentDescription = "Email Icon",
+                tint = textColor
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column{
+                Text("Email", color = textColor)
+                Text(text = email, color = textColor)
+            }
+        }
+        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Icon(
+                imageVector = Icons.Filled.Phone,
+                contentDescription = "Phone Icon",
+                tint = textColor
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text("Phone", color = textColor)
+                Text(text = phone, color = textColor)
+            }
+        }
+        if (userLocation != null) {
+            Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = "Location Icon",
+                    tint = textColor
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text("Location", color = textColor)
+                    Text(text = decodeLocation, color = textColor)
+                }
+            }
+        } else {
+            Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = "Location Icon",
+                    tint = textColor
+                )
+                Column {
+                    Text("Location", color = textColor)
+                    Text(text = "Location not available", color = MaterialTheme.colorScheme.error)
+                }
+            }
+        }
     }
 }
 
@@ -193,24 +283,6 @@ fun ErrorState(errorMessage: String) {
         )
     }
 }
-
-@Composable
-fun LocationInfo(userLocation: Location?, permissionViewModel: PermissionViewModel = viewModel(), context: Context) {
-    val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
-    val textColor = MaterialTheme.colorScheme.secondary
-    Column(
-        modifier = Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (userLocation != null) {
-            Text(text = "Your Location: $decodeLocation", color = textColor)
-        } else {
-            Text(text = "Location not available", color = MaterialTheme.colorScheme.error)
-        }
-    }
-}
-
-
 
 @Preview(showBackground = true)
 @Composable

@@ -35,6 +35,7 @@ import com.example.agrimata.ui.theme.AgriMataTheme
 import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.model.UserState
+import com.example.agrimata.screens.ClientEditProfileScreen
 import com.example.agrimata.screens.ClientProfileScreen
 import com.example.agrimata.screens.SignInScreen
 import com.example.agrimata.screens.SignUpScreen
@@ -68,7 +69,7 @@ fun AgriMata(modifier: Modifier) {
 
     val userState by authViewModel.userState
     LaunchedEffect(userState) {
-        startDestination = if (userState is UserState.Success) "clientprofile" else "signin"
+        startDestination = if (userState is UserState.Success) "profile" else "signin"
     }
 
     NavHost(
@@ -92,9 +93,16 @@ fun AgriMata(modifier: Modifier) {
                 authViewModel = authViewModel
             )
         }
-        composable("clientprofile"){
+        composable("profile"){
             ClientProfileScreen(
                 navController = navController,
+            )
+        }
+        composable("editprofile"){
+            ClientEditProfileScreen(
+                onBack = {
+                    navController.navigate("profile")
+                }
             )
         }
     }
