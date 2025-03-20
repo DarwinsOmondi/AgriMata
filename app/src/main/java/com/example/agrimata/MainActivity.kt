@@ -1,13 +1,9 @@
 package com.example.agrimata
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,18 +26,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.agrimata.ui.theme.AgriMataTheme
 import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.model.UserState
+import com.example.agrimata.network.SuparBaseClient.client
 import com.example.agrimata.screens.ClientEditProfileScreen
 import com.example.agrimata.screens.ClientProfileScreen
+import com.example.agrimata.screens.CreateFarmerAccount
+import com.example.agrimata.screens.FarmerEditProfileScreen
+import com.example.agrimata.screens.FarmerProfileScreen
+import com.example.agrimata.screens.SignInFarmerAccount
 import com.example.agrimata.screens.SignInScreen
 import com.example.agrimata.screens.SignUpScreen
+import com.example.agrimata.screens.WeatherScreen
 import com.example.agrimata.viewmodels.AgriMataClientAuth
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
-import java.util.*
+import io.github.jan.supabase.gotrue.gotrue
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,18 +60,26 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AgriMata(modifier: Modifier) {
+fun AgriMata(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val authViewModel: AgriMataClientAuth = viewModel()
-    var startDestination by remember { mutableStateOf("signin") }
+    val farmerauthViewModel: FarmersAuthViewModel = viewModel()
+
+    val userState by authViewModel.userState
+    val isFarmer by farmerauthViewModel.isFarmer
 
     LaunchedEffect(Unit) {
         authViewModel.checkUserLoggedIn()
+        farmerauthViewModel.checkIfUserIsFarmer()
     }
+    val user = client.gotrue.currentUserOrNull()
+    val role = user?.role
 
-    val userState by authViewModel.userState
-    LaunchedEffect(userState) {
-        startDestination = if (userState is UserState.Success) "profile" else "signin"
+
+    val startDestination = if (userState is UserState.Success) {
+        if (role == "farmer") "farmeraccount" else "profile"
+    } else {
+        "signin"
     }
 
     NavHost(
@@ -79,29 +89,52 @@ fun AgriMata(modifier: Modifier) {
         composable("signin") {
             SignInScreen(
                 onNavigateToSignUp = { navController.navigate("signup") },
-                onSignInSuccess = { navController.navigate("product") },
+                onSignInSuccess = { navController.navigate("profile") },
                 authViewModel = authViewModel
             )
         }
         composable("product") {
             ProductScreen()
         }
-
         composable("signup") {
             SignUpScreen(
                 onNavigateToSignIn = { navController.navigate("signin") },
                 authViewModel = authViewModel
             )
         }
-        composable("profile"){
-            ClientProfileScreen(
-                navController = navController,
+        composable("profile") {
+            ClientProfileScreen(navController = navController)
+        }
+        composable("editprofile") {
+            ClientEditProfileScreen(
+                onBack = { navController.popBackStack() }
             )
         }
-        composable("editprofile"){
-            ClientEditProfileScreen(
+        composable("farmeraccount") {
+                FarmerProfileScreen(navController = navController)
+            }
+        composable("createfarmeraccount"){
+                CreateFarmerAccount(
+                    onSuccess = { navController.navigate("farmeraccount")},
+                    authViewModel = farmerauthViewModel
+                )
+            }
+        composable("signinfarmeraccount"){
+            SignInFarmerAccount(
+                onNavigateToSignUp = { navController.navigate("createfarmeraccount")},
+                onSignInSuccess = { navController.navigate("farmeraccount")},
+                authViewModel = farmerauthViewModel
+            )
+        }
+        composable("editfarmerprofile"){
+            FarmerEditProfileScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("weather"){
+            WeatherScreen(
                 onBack = {
-                    navController.navigate("profile")
+                    navController.popBackStack()
                 }
             )
         }

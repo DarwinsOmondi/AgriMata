@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingBasket
@@ -50,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.agrimata.model.UserState
 import com.example.agrimata.viewmodels.AgriMataClientAuth
-import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,7 +130,7 @@ fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: AgriMataClientAut
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = "AgriMata brings the marketplace to your fingertips",
+                                text = "AgriMata brings the marketplace to your fingertips \uD83D\uDCF1.",
                                 color = textColor,
                                 style = MaterialTheme.typography.displaySmall,
                                 fontWeight = FontWeight.Bold
@@ -225,7 +223,7 @@ fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: AgriMataClientAut
                             Button(onClick = {
                                 scope.launch {
                                     if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && phone.isNotBlank()) {
-                                        authViewModel.SignUpUser(name, email, password, phone)
+                                        authViewModel.SignUpUser(name, email, password, phone,"client")
                                         Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
                                         if (userState is UserState.Success) {
                                             onNavigateToSignIn()

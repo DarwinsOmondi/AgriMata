@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,8 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.agrimata.model.UserState
 import com.example.agrimata.viewmodels.AgriMataClientAuth
-import com.example.agrimata.viewmodels.FarmersAuthViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -141,7 +138,7 @@ fun SignInScreen(
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = "Ensuring fair trade, real-time insights, and a thriving agricultural future.",
+                            text = "Ensuring fair trade ⚖\uFE0F, real-time insights \uD83D\uDCCA, and a thriving agricultural future \uD83C\uDF31.",
                             color = textColor,
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold
@@ -206,12 +203,11 @@ fun SignInScreen(
                             scope.launch {
                                 if (email.isNotBlank() && password.isNotBlank()) {
                                     authViewModel.SignInUser(email, password)
-                                    Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
                                     if (userState is UserState.Success) {
                                         onSignInSuccess()
+                                        Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
                                     } else {
-                                        scope.launch {
-                                            delay(2000)
+                                        if (userState is UserState.Error){
                                             Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
                                         }
                                     }

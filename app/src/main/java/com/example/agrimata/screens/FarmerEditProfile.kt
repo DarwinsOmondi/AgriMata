@@ -4,14 +4,36 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,19 +46,21 @@ import coil.compose.AsyncImage
 import com.example.agrimata.R
 import com.example.agrimata.model.UserProfileState
 import com.example.agrimata.viewmodels.AgriMataClientAuth
+import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.ProfileViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClientEditProfileScreen(onBack: () -> Unit) {
+fun FarmerEditProfileScreen(onBack: () -> Unit) {
+
     // Use MaterialTheme color scheme
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.secondary
 
-    val viewModel: AgriMataClientAuth = viewModel()
+    val viewModel: FarmersAuthViewModel = viewModel()
     val profileViewModel: ProfileViewModel = viewModel()
     val userProfileState = profileViewModel.userProfileState.value
     val context = LocalContext.current
@@ -55,10 +79,10 @@ fun ClientEditProfileScreen(onBack: () -> Unit) {
             profileImageUri = uri
             scope.launch {
                 try {
-                    viewModel.createClientProfileBucket()
-                    viewModel.uploadClientImageToSupabase(context, uri)
+                    viewModel.createFramerProfileBucket()
+                    viewModel.uploadFarmerImageToSupabase(context, uri)
                 } catch (e: Exception) {
-                    // Handle error (optional)
+
                 }
             }
         }
@@ -187,7 +211,7 @@ fun ClientEditProfileScreen(onBack: () -> Unit) {
             onClick = {
                 scope.launch {
                     try {
-                        viewModel.updateUserMetaData(userName, userEmail, userPhone)
+                        viewModel.updateFarmerDetail(userName, userEmail, userPhone)
                     } catch (e: Exception) {
 
                     }
@@ -196,7 +220,7 @@ fun ClientEditProfileScreen(onBack: () -> Unit) {
             modifier = Modifier.fillMaxWidth()
                 .height(50.dp),
 
-        ) {
+            ) {
             Text("Save changes")
         }
     }

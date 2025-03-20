@@ -11,14 +11,11 @@ class WeatherViewModel : ViewModel() {
     var weatherState = mutableStateOf<WeatherResponse?>(null)
     var errorMessage = mutableStateOf<String?>(null)
 
-    init {
-        fetchWeather()
-    }
 
-    fun fetchWeather() {
+    fun fetchWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             try {
-                val response = WeatherRepository.fetchWeather(-1.2833, 36.8167) // Nairobi
+                val response = WeatherRepository.fetchWeather(latitude, longitude)
                 weatherState.value = response
             } catch (e: Exception) {
                 errorMessage.value = e.message

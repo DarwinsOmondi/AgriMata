@@ -44,38 +44,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.agrimata.R
-import com.example.agrimata.components.UserBottomNavigationBarUi
-import com.example.agrimata.components.UserDrawerMenu
+import com.example.agrimata.components.FarmerBottomNavigationBarUi
+import com.example.agrimata.components.FarmerDrawerMenu
 import com.example.agrimata.model.UserProfileState
-import com.example.agrimata.viewmodels.AgriMataClientAuth
 import com.example.agrimata.viewmodels.ProfileViewModel
+import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClientProfileScreen(
-    navController: NavHostController
-) {
+fun FarmerProfileScreen(navController: NavHostController){
+    val authViewModel:FarmersAuthViewModel = viewModel()
     val profileViewModel: ProfileViewModel = viewModel()
-    val permissionViewModel: PermissionViewModel = viewModel()
-    val viewmodel: AgriMataClientAuth = viewModel()
-    val userProfileState = profileViewModel.userProfileState.value
+    val premissonViewModel: PermissionViewModel = viewModel()
+    val farmerProfileState = profileViewModel.userProfileState.value
     val context = LocalContext.current
-    var userLocation by remember { mutableStateOf<Location?>(null) }
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val profileImage = authViewModel.profileImage.value
     val scope = rememberCoroutineScope()
-    val profileImage = viewmodel.profileImage.value
+    var farmerLocation by remember { mutableStateOf<Location?>(null)}
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
 
-    // Use MaterialTheme color scheme
+
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -83,14 +79,14 @@ fun ClientProfileScreen(
 
 
     LaunchedEffect(Unit) {
-            permissionViewModel.getUserLocation(context) { location ->
-                userLocation = location
-            }
+        premissonViewModel.getUserLocation(context) { location ->
+            farmerLocation = location
+        }
     }
 
     ModalNavigationDrawer(
         drawerContent = {
-            UserDrawerMenu(navController, drawerState) {
+            FarmerDrawerMenu(navController, drawerState) {
                 scope.launch { drawerState.close() }
             }
         },
@@ -99,11 +95,12 @@ fun ClientProfileScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Client Profile", color = textColor) },
+                    title = { Text("Farmer Profile", color = textColor) },
                     colors = TopAppBarDefaults.topAppBarColors(
                         primaryColor,
                     ),
-                    modifier = Modifier.background(primaryColor)
+                    modifier = Modifier
+                        .background(primaryColor)
                         .padding(end = 8.dp),
                     navigationIcon = {
                         IconButton(
@@ -119,24 +116,21 @@ fun ClientProfileScreen(
                 )
             },
             bottomBar = {
-                UserBottomNavigationBarUi(navController)
-            },
-        ) { innerPadding ->
+                FarmerBottomNavigationBarUi(navController)
+            }
+        ){ innerPadding ->
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(backgroundColor),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                when (userProfileState) {
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(backgroundColor),
+                horizontalAlignment = Alignment.CenterHorizontally){
+                Spacer(Modifier.padding(18.dp))
+                when(farmerProfileState){
                     is UserProfileState.Loading -> {
                         LoadingState()
                     }
-
                     is UserProfileState.Success -> {
-
                         if (profileImage != null) {
                             AsyncImage(
                                 model = profileImage,
@@ -146,7 +140,7 @@ fun ClientProfileScreen(
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
                             )
-                        } else {
+                        }else {
                             AsyncImage(
                                 model = R.drawable.baseline_person_24,
                                 contentDescription = "Profile Placeholder",
@@ -156,20 +150,19 @@ fun ClientProfileScreen(
                                 contentScale = ContentScale.Crop
                             )
                         }
-                        ProfileInfo(
-                            name = userProfileState.name,
-                            email = userProfileState.email,
-                            phone = userProfileState.phone,
-                            imageUrl = userProfileState.imageUrl,
-                            userLocation,
-                            permissionViewModel,
-                            context
+                        FarmerProfileInfo(
+                            name = farmerProfileState.name,
+                            email = farmerProfileState.email,
+                            phone = farmerProfileState.phone,
+                            imageUrl = profileImage.toString(),
+                            farmerLocation = farmerLocation,
+                            permissionViewModel = premissonViewModel,
+                            context = context,
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    is UserProfileState.Error -> {
-                        ErrorState(errorMessage = userProfileState.message)
+                    is UserProfileState.Error ->{
+                        ErrorState(errorMessage = farmerProfileState.message)
                     }
                 }
             }
@@ -177,8 +170,9 @@ fun ClientProfileScreen(
     }
 }
 
+
 @Composable
-fun LoadingState() {
+fun FarmerLoadingState() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -191,8 +185,8 @@ fun LoadingState() {
 }
 
 @Composable
-fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,userLocation: Location?, permissionViewModel: PermissionViewModel = viewModel(), context: Context) {
-    val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
+fun FarmerProfileInfo(name: String, email: String, phone: String, imageUrl: String,farmerLocation: Location?, permissionViewModel: PermissionViewModel = viewModel(), context: Context) {
+    val decodeLocation = permissionViewModel.decodeLocation(context,farmerLocation)
     val textColor = MaterialTheme.colorScheme.secondary
     Column(
         modifier = Modifier
@@ -237,7 +231,7 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,use
                 Text(text = phone, color = textColor)
             }
         }
-        if (userLocation != null) {
+        if (farmerLocation != null) {
             Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
@@ -267,7 +261,7 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,use
 }
 
 @Composable
-fun ErrorState(errorMessage: String) {
+fun FarmerErrorState(errorMessage: String) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -279,10 +273,4 @@ fun ErrorState(errorMessage: String) {
             style = MaterialTheme.typography.bodyMedium
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ClientProfileScreenPreview() {
-    ClientProfileScreen( navController = NavHostController(LocalContext.current))
 }

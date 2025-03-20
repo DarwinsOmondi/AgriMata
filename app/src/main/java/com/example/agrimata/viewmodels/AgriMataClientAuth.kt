@@ -26,15 +26,13 @@ class AgriMataClientAuth: ViewModel() {
     private val _profileImage = mutableStateOf<ByteArray?>(null)
     val profileImage: State<ByteArray?> = _profileImage
 
-    private val bucketName = "client-image"
-
     init {
         observeSession()
         fetchClientImage()
     }
 
 
-    fun SignUpUser(userName: String, userEmail: String, userPassword: String, userPhone: String?) {
+    fun SignUpUser(userName: String, userEmail: String, userPassword: String, userPhone: String?,role:String?) {
         viewModelScope.launch {
             try {
                 client.gotrue.signUpWith(Email) {
@@ -43,6 +41,8 @@ class AgriMataClientAuth: ViewModel() {
                     data = buildJsonObject {
                         put("name", JsonPrimitive(userName))
                         if (!userPhone.isNullOrBlank()) put("phone", JsonPrimitive(userPhone))
+                        put("role", JsonPrimitive(role))
+                        if (!role.isNullOrBlank()) put("role", JsonPrimitive(role))
                     }
                 }
                 _userState.value = UserState.Success("User Created Successfully")
@@ -148,7 +148,6 @@ class AgriMataClientAuth: ViewModel() {
             // Upload the new image
             bucket.upload(imageFileName, imageByteArray, upsert = true)
 
-            // Store the image file name in the user's metadata
             client.gotrue.modifyUser {
                 data = buildJsonObject {
                     put("profile_image", JsonPrimitive(imageFileName))
