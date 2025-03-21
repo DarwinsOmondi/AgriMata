@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.agrimata.network.SuparBaseClient
 import com.example.agrimata.network.SuparBaseClient.client
-import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
 
 sealed class DrawerNavigationItem(val route: String, val title: String, val icon: ImageVector) {
@@ -107,7 +107,7 @@ fun UserDrawerMenu(
                 textColor = textColor
             ) {
                 scope.launch {
-                    client.gotrue.logout()
+                    client.auth.signOut()
                     navController.navigate("signinfarmeraccount") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
@@ -133,7 +133,7 @@ fun UserDrawerMenu(
             DrawerItem(
                 icon = Icons.AutoMirrored.Filled.ExitToApp, label = "Log Out",textColor = Color.Red) {
                 scope.launch {
-                    client.gotrue.logout()
+                    client.auth.signOut()
                     navController.navigate("signin") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
@@ -196,7 +196,7 @@ fun FarmerDrawerMenu(
             DrawerItem(
                 icon = Icons.AutoMirrored.Filled.ExitToApp, label = "Log Out",textColor = Color.Red) {
                 scope.launch {
-                    SuparBaseClient.client.gotrue.logout()
+                    SuparBaseClient.client.auth.signOut()
                     navController.navigate("signin") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }

@@ -41,25 +41,27 @@ sealed class BottomNavigationBar(val route: String, val title: String){
         // user Bottom Navigation
         object Category : BottomNavigationItem("category", "Category", Icons.Default.Category)
         object UserProfile:BottomNavigationItem("profile","Profile",Icons.Default.Person)
+        object Message : BottomNavigationItem("message", "Message", Icons.AutoMirrored.Filled.Chat)
         object Market:BottomNavigationItem("market","Market",Icons.Default.Storefront)
 
         // Farmer Bottom Navigation
         object Activity : BottomNavigationItem("activity", "Activity", Icons.AutoMirrored.Filled.ListAlt)
         object Crops : BottomNavigationItem("crops", "Crops", Icons.Default.Agriculture)
-        object Message : BottomNavigationItem("message", "Message", Icons.AutoMirrored.Filled.Chat)
+        object FarmerMessage : BottomNavigationItem("message", "Message", Icons.AutoMirrored.Filled.Chat)
         object FarmerProfile : BottomNavigationItem("farmerprofile", "Profile", Icons.Default.Person)
     }
 }
 val listOfUserBottomNavigationItems = listOf(
     BottomNavigationBar.BottomNavigationItem.Market,
     BottomNavigationBar.BottomNavigationItem.Category,
+    BottomNavigationBar.BottomNavigationItem.Message,
     BottomNavigationBar.BottomNavigationItem.UserProfile
 )
 
 val listOfFarmerBottomNavigationItems = listOf(
     BottomNavigationBar.BottomNavigationItem.Activity,
     BottomNavigationBar.BottomNavigationItem.Crops,
-    BottomNavigationBar.BottomNavigationItem.Message,
+    BottomNavigationBar.BottomNavigationItem.FarmerMessage,
     BottomNavigationBar.BottomNavigationItem.FarmerProfile
 )
 

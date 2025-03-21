@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.agrimata.model.UserProfileState
 import com.example.agrimata.network.SuparBaseClient
-import io.github.jan.supabase.gotrue.gotrue
-import io.github.jan.supabase.gotrue.user.UserInfo
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonPrimitive
@@ -32,7 +31,7 @@ class ProfileViewModel : ViewModel() {
     private fun fetchUserProfile() {
         viewModelScope.launch {
             try {
-                val user: UserInfo? = SuparBaseClient.client.gotrue.currentUserOrNull()
+                val user = SuparBaseClient.client.auth.currentUserOrNull()
                 if (user != null) {
                     val role = user.userMetadata?.get("role")?.jsonPrimitive?.content
                     when (role) {
@@ -55,7 +54,6 @@ class ProfileViewModel : ViewModel() {
                             )
                         }
                         else -> {
-                            // Handle unknown role
                             _userProfileState.value = UserProfileState.Error("Unknown user role")
                         }
                     }

@@ -31,10 +31,13 @@ import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.model.UserState
 import com.example.agrimata.network.SuparBaseClient.client
+import com.example.agrimata.screens.AddProductScreen
+import com.example.agrimata.screens.ChatScreen
 import com.example.agrimata.screens.ClientEditProfileScreen
 import com.example.agrimata.screens.ClientProfileScreen
 import com.example.agrimata.screens.CreateFarmerAccount
 import com.example.agrimata.screens.FarmerEditProfileScreen
+import com.example.agrimata.screens.FarmerProductScreen
 import com.example.agrimata.screens.FarmerProfileScreen
 import com.example.agrimata.screens.SignInFarmerAccount
 import com.example.agrimata.screens.SignInScreen
@@ -42,7 +45,7 @@ import com.example.agrimata.screens.SignUpScreen
 import com.example.agrimata.screens.WeatherScreen
 import com.example.agrimata.viewmodels.AgriMataClientAuth
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
-import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.auth.auth
 
 
 class MainActivity : ComponentActivity() {
@@ -72,12 +75,12 @@ fun AgriMata(modifier: Modifier = Modifier) {
         authViewModel.checkUserLoggedIn()
         farmerauthViewModel.checkIfUserIsFarmer()
     }
-    val user = client.gotrue.currentUserOrNull()
+    val user = client.auth.currentSessionOrNull()?.user
     val role = user?.role
 
 
     val startDestination = if (userState is UserState.Success) {
-        if (role == "farmer") "farmeraccount" else "profile"
+        if (role == "farmer") "farmeraccount" else "market"
     } else {
         "signin"
     }
@@ -110,7 +113,7 @@ fun AgriMata(modifier: Modifier = Modifier) {
                 onBack = { navController.popBackStack() }
             )
         }
-        composable("farmeraccount") {
+        composable("farmerprofile") {
                 FarmerProfileScreen(navController = navController)
             }
         composable("createfarmeraccount"){
@@ -137,6 +140,15 @@ fun AgriMata(modifier: Modifier = Modifier) {
                     navController.popBackStack()
                 }
             )
+        }
+        composable("message"){
+            ChatScreen()
+        }
+        composable("market"){
+            FarmerProductScreen(navController)
+        }
+        composable("activity"){
+            AddProductScreen(navController)
         }
     }
 }

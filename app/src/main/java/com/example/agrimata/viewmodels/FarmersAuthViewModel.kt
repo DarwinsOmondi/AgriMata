@@ -9,8 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.agrimata.model.UserState
 import com.example.agrimata.network.SuparBaseClient.client
-import io.github.jan.supabase.gotrue.gotrue
-import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -39,7 +38,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun signUpFarmer(userName: String, userEmail: String, userPassword: String, userPhone: String?,role: String?) {
         viewModelScope.launch {
             try {
-                client.gotrue.signUpWith(Email) {
+                client.auth.signUpWith(io.github.jan.supabase.auth.providers.builtin.Email) {
                     email = userEmail
                     password = userPassword
                     data = buildJsonObject {
@@ -60,7 +59,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun signInFarmer(email: String, password: String) {
         viewModelScope.launch {
             try {
-                client.gotrue.loginWith(Email) {
+                client.auth.signInWith(io.github.jan.supabase.auth.providers.builtin.Email) {
                     this.email = email
                     this.password = password
                 }
@@ -75,7 +74,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun logOut() {
         viewModelScope.launch {
             try {
-                client.gotrue.logout()
+                client.auth.signOut()
                 _userState.value = UserState.Success("User logged out successfully")
             } catch (e: Exception) {
                 Log.e("SupabaseLogOut", "Error: ${e.message}")
@@ -87,7 +86,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun checkIfUserIsFarmer() {
         viewModelScope.launch {
             try {
-                val user = client.gotrue.retrieveUserForCurrentSession()
+                val user = client.auth.currentSessionOrNull()?.user
                 val role = user?.userMetadata?.get("role")?.jsonPrimitive?.content
                 if (role == "farmer") {
                     _isFarmer.value = true
@@ -122,7 +121,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun checkUserLoggedIn() {
         viewModelScope.launch {
             try {
-                val user = client.gotrue.retrieveUserForCurrentSession()
+                val user = client.auth.currentSessionOrNull()?.user
                 _userState.value = if (user != null) {
                     UserState.Success("User is logged in")
                 } else {
@@ -137,7 +136,7 @@ class FarmersAuthViewModel(): ViewModel() {
 
     private fun observeSession() {
         viewModelScope.launch {
-            client.gotrue.sessionStatus.collectLatest { session ->
+            client.auth.sessionStatus.collectLatest { session ->
                 _userState.value = if (session != null) {
                     UserState.Success("User is logged in")
                 } else {
@@ -150,7 +149,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun updateFarmerDetail(name: String, email: String, phone: String){
         viewModelScope.launch {
             try{
-                client.gotrue.modifyUser {
+                client.auth.updateUser {
                     data = buildJsonObject {
                         put("name", JsonPrimitive(name))
                         put("email", JsonPrimitive(email))
@@ -167,8 +166,8 @@ class FarmersAuthViewModel(): ViewModel() {
     fun createFramerProfileBucket(){
         viewModelScope.launch {
             try{
-                val user = client.gotrue.retrieveUserForCurrentSession()
-                val bucketName = user.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+                val user = client.auth.currentSessionOrNull()?.user
+                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
 
                 val existingBuckets = client.storage.retrieveBuckets()
                 if (existingBuckets.any { it.id == bucketName }) {
@@ -191,8 +190,8 @@ class FarmersAuthViewModel(): ViewModel() {
     fun uploadFarmerImageToSupabase(context: Context,imageUri: Uri){
         viewModelScope.launch {
             try{
-                val user = client.gotrue.retrieveUserForCurrentSession()
-                val bucketName = user.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+                val user = client.auth.currentSessionOrNull()?.user
+                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
                 val imageFileName = "${UUID.randomUUID()}.jpg"
                 val bucket = client.storage[bucketName]
 
@@ -204,7 +203,7 @@ class FarmersAuthViewModel(): ViewModel() {
                 } catch (_: Exception) {
                 }
 
-                client.gotrue.modifyUser {
+                client.auth.updateUser {
                     data = buildJsonObject {
                         put("profile_image", JsonPrimitive(imageFileName))
                     }
@@ -220,7 +219,7 @@ class FarmersAuthViewModel(): ViewModel() {
     fun fetchClientImage() {
         viewModelScope.launch {
             try {
-                val user = client.gotrue.retrieveUserForCurrentSession()
+                val user = client.auth.currentSessionOrNull()?.user
                 val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
                 val imageFileName = user.userMetadata?.get("profile_image")?.jsonPrimitive?.content
 

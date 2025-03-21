@@ -33,7 +33,10 @@ class CooperativeViewModel : ViewModel() {
             try {
                 val group = client.postgrest["cooperative_groups"]
                     .select {
-                        eq("groupId", groupId)
+                        filter {
+                            eq("groupId", groupId)
+
+                        }
                     }
                     .decodeSingle<CooperativeGroup>()
 
@@ -41,7 +44,9 @@ class CooperativeViewModel : ViewModel() {
 
                 client.postgrest["cooperative_groups"]
                     .update(mapOf("members" to updatedMembers)){
-                        eq("groupId", groupId)
+                        filter {
+                            eq("groupId", groupId)
+                        }
                     }
                 Log.d("Cooperative", "User $userId joined group $groupId")
             } catch (e: Exception) {
@@ -56,7 +61,11 @@ class CooperativeViewModel : ViewModel() {
             try {
                 val group = client.postgrest["cooperative_groups"]
                     .select() {
-                        eq("groupId", groupId) }
+                        filter {
+                            eq("groupId", groupId)
+
+                        }
+                    }
                     .decodeSingle<CooperativeGroup>()
 
                 onSuccess(group.groupProducts)
@@ -72,14 +81,20 @@ class CooperativeViewModel : ViewModel() {
             try {
                 val group = client.postgrest["cooperative_groups"]
                     .select() {
-                        eq("groupId", groupId) }
+                        filter {
+                            eq("groupId", groupId)
+                        }
+                    }
                     .decodeSingle<CooperativeGroup>()
 
                 val updatedRevenue = group.totalRevenue + (quantity * 10.0) // Placeholder price logic
                 client.postgrest["cooperative_groups"]
                     .update(mapOf("totalRevenue" to updatedRevenue))
                     {
-                        eq("groupId", groupId)
+                        filter {
+                            eq("groupId", groupId)
+
+                        }
                     }
 
                 Log.d("Cooperative", "Sold $quantity of $productId to buyer $buyerId")
@@ -95,7 +110,9 @@ class CooperativeViewModel : ViewModel() {
             try {
                 val group = client.postgrest["cooperative_groups"]
                     .select() {
-                        eq("groupId", groupId)
+                        filter {
+                            eq("groupId", groupId)
+                        }
                     }
                     .decodeSingle<CooperativeGroup>()
 

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10" // ✅ Added serialization plugin
+    kotlin("plugin.serialization") version "2.1.10"
 }
 
 android {
@@ -72,14 +72,16 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
 
-    // Supabase Dependencies
-    val supabaseVersion = "1.3.2"
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:$supabaseVersion")
-    implementation("io.github.jan-tennert.supabase:storage-kt:$supabaseVersion")
-    implementation("io.github.jan-tennert.supabase:realtime-kt:$supabaseVersion")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt:$supabaseVersion")
-    //implementation("io.github.jan-tennert.supabase:auth-kt:3.1.3")
-    implementation("io.ktor:ktor-client-cio:2.3.4")
+    // Ktor dependencies
+    implementation("io.ktor:ktor-client-android:3.1.1")
+
+
+    // Supabase dependencies
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.3"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:storage-kt")
 
 
     // Navigation Components
