@@ -125,7 +125,7 @@ fun AgriMata(modifier: Modifier = Modifier) {
         composable("signinfarmeraccount"){
             SignInFarmerAccount(
                 onNavigateToSignUp = { navController.navigate("createfarmeraccount")},
-                onSignInSuccess = { navController.navigate("farmeraccount")},
+                onSignInSuccess = { navController.navigate("activity")},
                 authViewModel = farmerauthViewModel
             )
         }
