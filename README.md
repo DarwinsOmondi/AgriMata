@@ -1,5 +1,4 @@
 # AgriMata - Farming Community App
-
 AgriMata is a mobile application designed to connect farmers directly with buyers and provide agricultural insights, weather updates, and an interactive marketplace for farm products.
 
 ## 📌 Features
