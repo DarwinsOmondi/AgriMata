@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -51,11 +54,13 @@ import coil.compose.AsyncImage
 import com.example.agrimata.R
 import com.example.agrimata.components.FarmerBottomNavigationBarUi
 import com.example.agrimata.components.FarmerDrawerMenu
+import com.example.agrimata.model.Farmer
 import com.example.agrimata.model.UserProfileState
 import com.example.agrimata.viewmodels.ProfileViewModel
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +81,7 @@ fun FarmerProfileScreen(navController: NavHostController){
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.secondary
-
+    val decodeLocation = premissonViewModel.decodeLocation(context,farmerLocation)
 
     LaunchedEffect(Unit) {
         premissonViewModel.getUserLocation(context) { location ->
@@ -131,6 +136,8 @@ fun FarmerProfileScreen(navController: NavHostController){
                         LoadingState()
                     }
                     is UserProfileState.Success -> {
+
+
                         if (profileImage != null) {
                             AsyncImage(
                                 model = profileImage,
@@ -158,6 +165,12 @@ fun FarmerProfileScreen(navController: NavHostController){
                             farmerLocation = farmerLocation,
                             permissionViewModel = premissonViewModel,
                             context = context,
+                            Farmer(
+                                name = farmerProfileState.name,
+                                email = farmerProfileState.email,
+                                phone = farmerProfileState.phone,
+                                location = decodeLocation
+                            )
                         )
                     }
 
@@ -185,9 +198,19 @@ fun FarmerLoadingState() {
 }
 
 @Composable
-fun FarmerProfileInfo(name: String, email: String, phone: String, imageUrl: String,farmerLocation: Location?, permissionViewModel: PermissionViewModel = viewModel(), context: Context) {
+fun FarmerProfileInfo(
+    name: String,
+    email: String,
+    phone: String,
+    imageUrl: String,
+    farmerLocation: Location?,
+    permissionViewModel: PermissionViewModel = viewModel(),
+    context: Context,
+    newFarmer: Farmer
+) {
     val decodeLocation = permissionViewModel.decodeLocation(context,farmerLocation)
     val textColor = MaterialTheme.colorScheme.secondary
+    val authViewModel:FarmersAuthViewModel = viewModel()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -256,6 +279,16 @@ fun FarmerProfileInfo(name: String, email: String, phone: String, imageUrl: Stri
                     Text(text = "Location not available", color = MaterialTheme.colorScheme.error)
                 }
             }
+        }
+
+        TextButton(
+            onClick = {
+                authViewModel.addFarmerToListOfFarmers(newFarmer)
+            },
+            Modifier.align(Alignment.Start),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+        ) {
+            Text("Add to farmer list")
         }
     }
 }

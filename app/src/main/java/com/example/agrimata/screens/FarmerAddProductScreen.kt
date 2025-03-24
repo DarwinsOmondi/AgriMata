@@ -34,7 +34,9 @@ import com.example.agrimata.components.FarmerBottomNavigationBarUi
 import com.example.agrimata.components.UserBottomNavigationBarUi
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.viewmodels.FarmerProductViewModel
+import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
+import com.example.agrimata.viewmodels.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,8 @@ fun AddProductScreen(navcontroller: NavHostController) {
     var productLocation by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var userLocation by remember { mutableStateOf<Location?>(null) }
+    val authViewModel:FarmersAuthViewModel = viewModel()
+    val profileImage = authViewModel.profileImage.value
 
 
     var categoryDropDownExpanded by remember { mutableStateOf(false) }
@@ -116,6 +120,7 @@ fun AddProductScreen(navcontroller: NavHostController) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
 
         // Text Fields
         OutlinedTextField(
@@ -351,4 +356,5 @@ val listOfUnites = listOf<String>(
     "Bags",
     "Packs",
     "Bunch",
+    "tray"
 )

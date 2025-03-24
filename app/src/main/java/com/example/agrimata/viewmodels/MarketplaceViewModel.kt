@@ -7,9 +7,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.agrimata.model.Farmer
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.network.SuparBaseClient.client
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +27,12 @@ class FarmerProductViewModel : ViewModel() {
     private val _farmerProducts = MutableStateFlow<List<FarmerProduct>>(emptyList())
     val farmerProducts: StateFlow<List<FarmerProduct>> = _farmerProducts
 
+    private val _farmProductDeals = MutableStateFlow<List<FarmerProduct>>(emptyList())
+    val farmProductDeals: StateFlow<List<FarmerProduct>> = _farmProductDeals
+
+    private val _productsNearYou = MutableStateFlow<List<FarmerProduct>>(emptyList())
+    val productsNearYou: StateFlow<List<FarmerProduct>> = _productsNearYou
+
     private val _productUploadState = MutableStateFlow("")
     val productUploadState: StateFlow<String> = _productUploadState
 
@@ -34,12 +42,12 @@ class FarmerProductViewModel : ViewModel() {
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
 
-    private val _productImages = MutableStateFlow<ByteArray?>(null)
-    val productImages: StateFlow<ByteArray?> = _productImages
+
 
 
     init {
         fetchFarmerProducts()
+        checkForDeals()
     }
 
     private suspend fun uploadImageToSupabase(context: Context, imageUri: Uri): String {
@@ -100,7 +108,50 @@ class FarmerProductViewModel : ViewModel() {
         }
     }
 
+    fun searchProducts(query: String) {
+        viewModelScope.launch {
+            try {
+                val filteredProducts = client.postgrest["farmproducts"]
+                    .select(columns = Columns.list("id", "name", "category", "pricePerUnit", "imageUrl","unit","stockQuantity")) {
+                        filter {
+                            or {
+                                ilike("name", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
+                                ilike("location", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
+                            }
+                        }
+                    }
+                    .decodeList<FarmerProduct>()
+                if(filteredProducts.isNotEmpty()){
+                    _farmerProducts.value = filteredProducts
+                }else{
+                    _farmerProducts.value = _farmerProducts.value
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
 
+    fun productNearYou(location: String) {
+        viewModelScope.launch {
+            try {
+                val productsNearYou = client.postgrest["farmproducts"]
+                    .select(columns = Columns.list("id", "name", "category", "pricePerUnit", "imageUrl", "unit", "stockQuantity")) {
+                        filter {
+                            ilike("location", "%${location.replace("%", "\\%").replace("_", "\\_")}%")
+                        }
+                    }
+                    .decodeList<FarmerProduct>()
+
+                if (productsNearYou.isNotEmpty()) {
+                    _productsNearYou.value = productsNearYou
+                } else {
+                    _errorState.value = "No products near you"
+                }
+            } catch (e: Exception) {
+                _errorState.value = "Error fetching products near you: ${e.message}"
+            }
+        }
+    }
 
     fun deleteFarmerProduct(productId: String, imageUrl: String) {
         viewModelScope.launch {
@@ -152,4 +203,24 @@ class FarmerProductViewModel : ViewModel() {
         }
     }
 
+    fun checkForDeals() {
+        viewModelScope.launch {
+            try {
+                val products = client.postgrest["farmproducts"]
+                    .select(columns = Columns.list("id", "name", "category", "pricePerUnit", "imageUrl","unit","stockQuantity"))
+                    .decodeList<FarmerProduct>()
+
+                val cheapestProducts = products
+                    .groupBy { it.category }
+                    .mapNotNull { (_, productsInCategory) ->
+                        productsInCategory.minByOrNull { it.pricePerUnit }
+                    }
+
+                _farmProductDeals.value = cheapestProducts
+
+            } catch (e: Exception) {
+                println("Error fetching deals: ${e.message}")
+            }
+        }
+    }
 }

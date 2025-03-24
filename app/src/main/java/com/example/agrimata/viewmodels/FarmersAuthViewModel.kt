@@ -7,10 +7,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.agrimata.model.Farmer
 import com.example.agrimata.model.UserState
 import com.example.agrimata.network.SuparBaseClient.client
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.storage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonPrimitive
@@ -28,6 +33,12 @@ class FarmersAuthViewModel(): ViewModel() {
 
     private val _profileImage = mutableStateOf<ByteArray?>(null)
     val profileImage: State<ByteArray?> = _profileImage
+
+    private val _farmers = MutableStateFlow<List<Farmer>>(emptyList())
+    val farmers : StateFlow<List<Farmer>> = _farmers
+
+    private val _farmerUri = mutableStateOf<ByteArray?>(null)
+    val farmerUri: State<ByteArray?> = _farmerUri
 
     init {
         observeSession()
@@ -102,21 +113,20 @@ class FarmersAuthViewModel(): ViewModel() {
     }
 
 
-
-//    fun resetPassword(email: String,password: String) {
-//        viewModelScope.launch {
-//            try {
-//                client.auth.resetPasswordForEmail(email)
-//                client.auth.updateUser {
-//                    this.password = password
-//                }
-//                _userState.value = UserState.Success("Password reset email sent successfully")
-//            }catch (e: Exception){
-//                Log.e("SupabaseResetPassword", "Error: ${e.message}")
-//                _userState.value = UserState.Error("Reset password failed: ${e.localizedMessage}")
-//            }
-//        }
-//    }
+    fun resetPassword(email: String,password: String) {
+        viewModelScope.launch {
+            try {
+                client.auth.resetPasswordForEmail(email)
+                client.auth.updateUser {
+                    this.password = password
+                }
+                _userState.value = UserState.Success("Password reset email sent successfully")
+            }catch (e: Exception){
+                Log.e("SupabaseResetPassword", "Error: ${e.message}")
+                _userState.value = UserState.Error("Reset password failed: ${e.localizedMessage}")
+            }
+        }
+    }
 
     fun checkUserLoggedIn() {
         viewModelScope.launch {
@@ -132,6 +142,17 @@ class FarmersAuthViewModel(): ViewModel() {
             }
         }
     }
+
+    fun addFarmerToListOfFarmers(farmer: Farmer){
+        viewModelScope.launch {
+            try {
+                client.postgrest["farmers"].insert(farmer)
+            }catch (e: Exception){
+                Log.e("SupabaseAddFarmer", "Error: ${e.message}")
+            }
+        }
+    }
+
 
 
     private fun observeSession() {

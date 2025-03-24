@@ -197,4 +197,19 @@ class AgriMataClientAuth: ViewModel() {
             }
         }
     }
+
+    fun resetPassword(email: String,password: String){
+        viewModelScope.launch {
+            try{
+                client.auth.resetPasswordForEmail(email)
+                client.auth.updateUser {
+                    this.password = password
+                }
+                _userState.value = UserState.Success("Password reset email sent successfully")
+        }catch (e: Exception){
+            _userState.value = UserState.Error(e.message.toString())
+        }
+
+        }
+    }
 }

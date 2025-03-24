@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.network.SuparBaseClient.client
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,14 +69,17 @@ class BuyerMarketplaceViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _orderState.value = "Searching Products..."
-                val filteredProducts = client.postgrest["farmproducts"].select {
-                    filter {
-                        or {
-                            ilike("name", "%$query%") // Partial match for better search results
-                            eq("location", query)
+                val filteredProducts = client.postgrest["farmproducts"]
+                    .select(columns = Columns.list("id", "name", "location", "pricePerUnit", "imageUrl")) {
+                        filter {
+                            or {
+                                ilike("name", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
+                                ilike("location", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
+                            }
                         }
                     }
-                }.decodeList<FarmerProduct>()
+                    .decodeList<FarmerProduct>()
+
                 _products.value = filteredProducts
                 _orderState.value = "Search Completed"
             } catch (e: Exception) {
@@ -83,6 +87,7 @@ class BuyerMarketplaceViewModel : ViewModel() {
             }
         }
     }
+
 
     fun placeOrder(userId: String, productId: String, quantity: Int) {
         viewModelScope.launch {
