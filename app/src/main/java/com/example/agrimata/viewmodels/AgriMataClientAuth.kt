@@ -18,7 +18,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.io.IOException
 import java.util.UUID
 
-class AgriMataClientAuth: ViewModel() {
+class AgriMataClientAuth : ViewModel() {
     private val _userState = mutableStateOf<UserState>(UserState.Loading)
     val userState: State<UserState> = _userState
 
@@ -31,10 +31,16 @@ class AgriMataClientAuth: ViewModel() {
     }
 
 
-    fun SignUpUser(userName: String, userEmail: String, userPassword: String, userPhone: String?,role:String?) {
+    fun SignUpUser(
+        userName: String,
+        userEmail: String,
+        userPassword: String,
+        userPhone: String?,
+        role: String?
+    ) {
         viewModelScope.launch {
             try {
-                client.auth.signUpWith(io.github.jan.supabase.auth.providers.builtin.Email){
+                client.auth.signUpWith(io.github.jan.supabase.auth.providers.builtin.Email) {
                     email = userEmail
                     password = userPassword
                     data = buildJsonObject {
@@ -107,7 +113,8 @@ class AgriMataClientAuth: ViewModel() {
         viewModelScope.launch {
             try {
                 val session = client.auth.currentSessionOrNull()
-                val bucketName = session?.user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+                val bucketName = session?.user?.userMetadata?.get("email")?.jsonPrimitive?.content
+                    ?: throw Exception("User email not found")
 
                 val existingBuckets = client.storage.retrieveBuckets()
                 if (existingBuckets.any { it.id == bucketName }) {
@@ -120,7 +127,8 @@ class AgriMataClientAuth: ViewModel() {
                     fileSizeLimit = 10.megabytes
                 }
 
-                _userState.value = UserState.Success("Client Profile Bucket '$bucketName' Created Successfully")
+                _userState.value =
+                    UserState.Success("Client Profile Bucket '$bucketName' Created Successfully")
             } catch (e: Exception) {
                 _userState.value = UserState.Error("Bucket creation failed: ${e.message}")
             }
@@ -131,13 +139,15 @@ class AgriMataClientAuth: ViewModel() {
     suspend fun uploadClientImageToSupabase(context: Context, imageUri: Uri) {
         try {
             val session = client.auth.currentSessionOrNull()
-            val bucketName = session?.user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+            val bucketName = session?.user?.userMetadata?.get("email")?.jsonPrimitive?.content
+                ?: throw Exception("User email not found")
 
             val imageFileName = "${UUID.randomUUID()}.jpg"
             val bucket = client.storage[bucketName]
 
-            val imageByteArray = context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
-                ?: throw IOException("Failed to read image file")
+            val imageByteArray =
+                context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
+                    ?: throw IOException("Failed to read image file")
 
             try {
                 bucket.delete(imageFileName)
@@ -145,7 +155,7 @@ class AgriMataClientAuth: ViewModel() {
             }
 
             // Upload the new image
-            bucket.upload(imageFileName, imageByteArray){
+            bucket.upload(imageFileName, imageByteArray) {
                 upsert = true
             }
 
@@ -155,7 +165,8 @@ class AgriMataClientAuth: ViewModel() {
                 }
             }
 
-            _userState.value = UserState.Success("Image uploaded successfully to bucket: $bucketName")
+            _userState.value =
+                UserState.Success("Image uploaded successfully to bucket: $bucketName")
         } catch (e: Exception) {
             _userState.value = UserState.Error("Image upload failed: ${e.message}")
         }
@@ -165,8 +176,10 @@ class AgriMataClientAuth: ViewModel() {
         viewModelScope.launch {
             try {
                 val session = client.auth.currentSessionOrNull()
-                val bucketName = session?.user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
-                val imageFileName = session.user?.userMetadata?.get("profile_image")?.jsonPrimitive?.content
+                val bucketName = session?.user?.userMetadata?.get("email")?.jsonPrimitive?.content
+                    ?: throw Exception("User email not found")
+                val imageFileName =
+                    session.user?.userMetadata?.get("profile_image")?.jsonPrimitive?.content
 
                 if (!imageFileName.isNullOrBlank()) {
                     val bucket = client.storage[bucketName]
@@ -192,23 +205,23 @@ class AgriMataClientAuth: ViewModel() {
                         put("phone", JsonPrimitive(phone))
                     }
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 _userState.value = UserState.Error("Failed to update user metadata: ${e.message}")
             }
         }
     }
 
-    fun resetPassword(email: String,password: String){
+    fun resetPassword(email: String, password: String) {
         viewModelScope.launch {
-            try{
+            try {
                 client.auth.resetPasswordForEmail(email)
                 client.auth.updateUser {
                     this.password = password
                 }
                 _userState.value = UserState.Success("Password reset email sent successfully")
-        }catch (e: Exception){
-            _userState.value = UserState.Error(e.message.toString())
-        }
+            } catch (e: Exception) {
+                _userState.value = UserState.Error(e.message.toString())
+            }
 
         }
     }

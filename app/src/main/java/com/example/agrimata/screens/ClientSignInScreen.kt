@@ -54,7 +54,6 @@ import com.example.agrimata.viewmodels.AgriMataClientAuth
 import kotlinx.coroutines.launch
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(
@@ -108,7 +107,7 @@ fun SignInScreen(
                             contentDescription = "shoppingBasket",
                             tint = secondaryColor,
 
-                        )
+                            )
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
@@ -121,12 +120,13 @@ fun SignInScreen(
                         )
                     }
 
-                    Box(Modifier.align(Alignment.CenterHorizontally)){
+                    Box(Modifier.align(Alignment.CenterHorizontally)) {
                         Icon(
                             imageVector = Icons.Default.ShoppingBasket,
                             contentDescription = "shoppingBasket",
                             tint = secondaryColor,
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier
+                                .align(Alignment.Center)
                                 .width(100.dp)
                                 .height(100.dp)
                         )
@@ -205,14 +205,26 @@ fun SignInScreen(
                                     authViewModel.SignInUser(email, password)
                                     if (userState is UserState.Success) {
                                         onSignInSuccess()
-                                        Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Sign In Successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     } else {
-                                        if (userState is UserState.Error){
-                                            Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
+                                        if (userState is UserState.Error) {
+                                            Toast.makeText(
+                                                context,
+                                                "Sign In Failed",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                                 } else {
-                                    Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Please fill all fields",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         },
@@ -229,11 +241,19 @@ fun SignInScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     TextButton(onClick = { onNavigateToSignUp() }) {
-                        Text("Create an Account", style = MaterialTheme.typography.bodyMedium, color = textColor)
+                        Text(
+                            "Create an Account",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = textColor
+                        )
                     }
 
                     if (error.isNotEmpty()) {
-                        Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
@@ -242,9 +262,12 @@ fun SignInScreen(
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun SignInScreenPreview() {
-    SignInScreen(onNavigateToSignUp = {}, onSignInSuccess = {}, authViewModel = AgriMataClientAuth())
+    SignInScreen(
+        onNavigateToSignUp = {},
+        onSignInSuccess = {},
+        authViewModel = AgriMataClientAuth()
+    )
 }

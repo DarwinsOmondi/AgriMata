@@ -10,7 +10,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.*
@@ -66,6 +69,7 @@ fun FarmerProductScreen(navController: NavHostController) {
     val profileImage = authViewModel.profileImage.value
     var isRefreshing by remember { mutableStateOf(false) }
     var userLocation by remember { mutableStateOf<Location?>(null) }
+    var noItems by remember { mutableIntStateOf(0) }
     val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
 
 
@@ -87,7 +91,7 @@ fun FarmerProductScreen(navController: NavHostController) {
             when (userProfileState) {
                 is UserProfileState.Success -> {
                     TopAppBar(
-                        title = { Text(userProfileState.name) },
+                        title = { Text(userProfileState.name,color = MaterialTheme.colorScheme.secondary) },
                         navigationIcon = {
                             AsyncImage(
                                 model = profileImage,
@@ -98,7 +102,17 @@ fun FarmerProductScreen(navController: NavHostController) {
                                 contentScale = ContentScale.Crop,
                             )
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
+                        actions = {
+                            Row {
+                                IconButton(
+                                    onClick = {},
+                                ) {
+                                    Icon(Icons.Default.ShoppingBasket, contentDescription = "Shopping cart", tint = MaterialTheme.colorScheme.secondary)
+                                }
+                                Text("$noItems", color = MaterialTheme.colorScheme.secondary)
+                            }
+                        }
                     )
                 }
 
@@ -202,7 +216,13 @@ fun FarmerProductScreen(navController: NavHostController) {
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                             ) {
                                 items(farmerProducts.take(10).reversed()) { product ->
-                                    ColumnProductItem(product = product)
+                                    ColumnProductItem(product = product,
+                                        onAddToBucket = {noItems++},
+                                        onRemoveFromBucket = {noItems--},
+                                        onClickListener = {
+                                            navController.navigate("productDetail/${product.productId}")
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -221,7 +241,12 @@ fun FarmerProductScreen(navController: NavHostController) {
                         reverseLayout = true
                     ) {
                         items(farmProductsOnDeal) { product ->
-                            ColumnProductItem(product = product)
+                            ColumnProductItem(product = product, onAddToBucket = {noItems++},
+                                onRemoveFromBucket = {noItems--},
+                                onClickListener = {
+                                    navController.navigate("productDetail/${product.productId}")
+                                }
+                            )
                         }
                     }
 
@@ -238,7 +263,13 @@ fun FarmerProductScreen(navController: NavHostController) {
                         reverseLayout = true
                     ) {
                         items(productsNearYou) { product ->
-                            ColumnProductItem(product = product)
+                            ColumnProductItem(product = product,
+                                onAddToBucket = {noItems++},
+                                onRemoveFromBucket = {noItems--},
+                                onClickListener = {
+                                    navController.navigate("productDetail/${product.productId}")
+                                }
+                            )
                         }
                     }
                 }
@@ -248,13 +279,15 @@ fun FarmerProductScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ColumnProductItem(product: FarmerProduct) {
+fun ColumnProductItem(product: FarmerProduct, onClickListener: () -> Unit = {},onAddToBucket: () -> Unit = {},onRemoveFromBucket: () -> Unit = {}) {
     var liked by remember { mutableStateOf(false) }
+    var isAddedToBucket by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(Color.White)
+        colors = CardDefaults.cardColors(Color.White),
+        onClick = {onClickListener()}
     ) {
 
         var productImages by remember { mutableStateOf<ByteArray?>(null) }
@@ -301,7 +334,9 @@ fun ColumnProductItem(product: FarmerProduct) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
-            Row(Modifier.align(Alignment.End)){
+            Row(Modifier.align(Alignment.End),
+                horizontalArrangement = Arrangement.SpaceBetween){
+
                 IconButton(
                     onClick = {
                         liked = !liked
@@ -313,10 +348,26 @@ fun ColumnProductItem(product: FarmerProduct) {
                         tint = if (liked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                     )
                 }
+                IconButton(
+                    onClick = {
+                        isAddedToBucket = !isAddedToBucket
+                        if (isAddedToBucket){
+                            onAddToBucket()
+                        }else{
+                            onRemoveFromBucket()
+                        }
+                    }
+                ){
+                    Icon(Icons.Default.ShoppingBag,
+                        contentDescription = "Add to Bucket",
+                        tint = if (isAddedToBucket) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun CategoryItem(category: CategoryItem) {

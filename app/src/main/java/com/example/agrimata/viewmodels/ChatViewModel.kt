@@ -40,7 +40,12 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    fun sendMessage(message: String, senderId: String, receiverId: String, groupId: String? = null) {
+    fun sendMessage(
+        message: String,
+        senderId: String,
+        receiverId: String,
+        groupId: String? = null
+    ) {
         viewModelScope.launch {
             val newMessage = Message(
                 id = UUID.randomUUID().toString(),

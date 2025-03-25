@@ -13,7 +13,7 @@ object SuparBaseClient {
     val client = createSupabaseClient(
         supabaseUrl = keys.suparbaseUrl,
         supabaseKey = keys.suparbaseKey
-    ){
+    ) {
         install(Auth)
         //install(GoTrue)
         install(Postgrest)

@@ -14,7 +14,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class ProfileViewModel : ViewModel() {
     private val _userProfileState = mutableStateOf<UserProfileState>(UserProfileState.Loading)
-    val userProfileState:State<UserProfileState> = _userProfileState
+    val userProfileState: State<UserProfileState> = _userProfileState
 
     init {
         startUserProfileUpdates()
@@ -28,6 +28,7 @@ class ProfileViewModel : ViewModel() {
             }
         }
     }
+
     private fun fetchUserProfile() {
         viewModelScope.launch {
             try {
@@ -44,6 +45,7 @@ class ProfileViewModel : ViewModel() {
                                 imageUrl = user.userMetadata?.get("imageUrl")?.toString() ?: ""
                             )
                         }
+
                         "farmer" -> {
                             // Fetch farmer-specific data
                             _userProfileState.value = UserProfileState.Success(
@@ -53,6 +55,7 @@ class ProfileViewModel : ViewModel() {
                                 imageUrl = user.userMetadata?.get("profile_image")?.toString() ?: ""
                             )
                         }
+
                         else -> {
                             _userProfileState.value = UserProfileState.Error("Unknown user role")
                         }
@@ -61,7 +64,8 @@ class ProfileViewModel : ViewModel() {
                     _userProfileState.value = UserProfileState.Error("User not logged in")
                 }
             } catch (e: Exception) {
-                _userProfileState.value = UserProfileState.Error("Error fetching profile: ${e.message}")
+                _userProfileState.value =
+                    UserProfileState.Error("Error fetching profile: ${e.message}")
                 Log.e("UserProfileViewModel", "Error fetching user profile", e)
             }
         }

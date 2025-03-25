@@ -8,5 +8,6 @@ sealed class UserProfileState {
         val phone: String,
         val imageUrl: String
     ) : UserProfileState()
+
     data class Error(val message: String) : UserProfileState()
 }

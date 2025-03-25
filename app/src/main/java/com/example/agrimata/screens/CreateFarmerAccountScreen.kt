@@ -87,9 +87,11 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
         is UserProfileState.Error -> {
 
         }
+
         UserProfileState.Loading -> {
 
         }
+
         is UserProfileState.Success -> {
             name = userProfileState.name
             email = userProfileState.email
@@ -97,7 +99,8 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
         }
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize()
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -134,7 +137,7 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                         )
                     }
 
-                    Box(Modifier.align(Alignment.CenterHorizontally)){
+                    Box(Modifier.align(Alignment.CenterHorizontally)) {
                         Icon(
                             imageVector = Icons.Default.ShoppingBasket,
                             contentDescription = "shoppingBasket",
@@ -173,7 +176,7 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Name",color = textColor) },
+                        label = { Text("Name", color = textColor) },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -187,7 +190,7 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email",color = textColor) },
+                        label = { Text("Email", color = textColor) },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -200,7 +203,7 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                     OutlinedTextField(
                         value = phone,
                         onValueChange = { phone = it },
-                        label = { Text("Phone",color = textColor) },
+                        label = { Text("Phone", color = textColor) },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -214,7 +217,7 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Password",color = textColor) },
+                        label = { Text("Password", color = textColor) },
                         visualTransformation = if (!togglePasswordVisibility) PasswordVisualTransformation() else VisualTransformation.None,
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                         modifier = Modifier.fillMaxWidth(),
@@ -242,24 +245,44 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                     if (isLoading) {
                         CircularProgressIndicator()
                     } else {
-                        Button(onClick = {
-                            scope.launch {
-                                if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && phone.isNotBlank()) {
-                                    clientAuthViewModel.LogOut()
-                                    authViewModel.signUpFarmer(name, email, password, phone,"farmer")
-                                    Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
-                                    if (userState is UserState.Success) {
-                                        onSuccess()
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && phone.isNotBlank()) {
+                                        clientAuthViewModel.LogOut()
+                                        authViewModel.signUpFarmer(
+                                            name,
+                                            email,
+                                            password,
+                                            phone,
+                                            "farmer"
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            "Sign Up Successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        if (userState is UserState.Success) {
+                                            onSuccess()
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "Sign Up Failed",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     } else {
-                                        Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Please fill all fields",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
-                                }else{
-                                    Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
                                 }
-                            }
-                        },
+                            },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(primaryColor)) {
+                            colors = ButtonDefaults.buttonColors(primaryColor)
+                        ) {
                             Text("Sign Up", color = textColor)
                         }
                     }
@@ -267,14 +290,26 @@ fun CreateFarmerAccount(onSuccess: () -> Unit, authViewModel: FarmersAuthViewMod
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row {
-                        Text("Already have an account?", color = textColor,modifier = Modifier.padding(top = 14.dp))
+                        Text(
+                            "Already have an account?",
+                            color = textColor,
+                            modifier = Modifier.padding(top = 14.dp)
+                        )
 
                         TextButton(onClick = { onSuccess() }) {
-                            Text("Sign in", style = MaterialTheme.typography.bodyMedium,color = primaryColor)
+                            Text(
+                                "Sign in",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = primaryColor
+                            )
                         }
                     }
                     if (error.isNotEmpty()) {
-                        Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }

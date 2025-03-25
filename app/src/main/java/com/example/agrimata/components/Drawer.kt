@@ -45,19 +45,27 @@ sealed class DrawerNavigationItem(val route: String, val title: String, val icon
 
     //User Darwer Navigation Items
     object EditProfile : DrawerNavigationItem("editprofile", "Edit Profile", Icons.Default.Edit)
-    object FarmerAccount : DrawerNavigationItem("farmeraccount", "Farmer Account", Icons.Default.Agriculture)
+    object FarmerAccount :
+        DrawerNavigationItem("farmeraccount", "Farmer Account", Icons.Default.Agriculture)
+
     object Settings : DrawerNavigationItem("setting", "Settings", Icons.Default.Settings)
     object AboutUs : DrawerNavigationItem("aboutus", "About Us", Icons.Default.Info)
     object ContactUs : DrawerNavigationItem("contactus", "Contact Us", Icons.Default.Phone)
 
     // Farmer Darwer Navigation Items
     object Orders : DrawerNavigationItem("orders", "Orders", Icons.Default.ShoppingCart)
-    object CropsInventory : DrawerNavigationItem("crops_inventory", "Crops & Inventory", Icons.Default.Grass)
+    object CropsInventory :
+        DrawerNavigationItem("crops_inventory", "Crops & Inventory", Icons.Default.Grass)
+
     object Market : DrawerNavigationItem("market", "Market", Icons.Default.Storefront)
-    object Weather : DrawerNavigationItem("weather", "Weather",Icons.Default.Cloud)
+    object Weather : DrawerNavigationItem("weather", "Weather", Icons.Default.Cloud)
     object Reports : DrawerNavigationItem("reports", "Reports & Analytics", Icons.Default.BarChart)
-    object Financials : DrawerNavigationItem("financials", "Financials", Icons.Default.AccountBalanceWallet)
-    object FarmerSettings : DrawerNavigationItem("editfarmerprofile", "Settings", Icons.Default.Settings)
+    object Financials :
+        DrawerNavigationItem("financials", "Financials", Icons.Default.AccountBalanceWallet)
+
+    object FarmerSettings :
+        DrawerNavigationItem("editfarmerprofile", "Settings", Icons.Default.Settings)
+
     object Help : DrawerNavigationItem("help", "Help & Support", Icons.AutoMirrored.Filled.Help)
 }
 
@@ -131,7 +139,8 @@ fun UserDrawerMenu(
             HorizontalDivider()
 
             DrawerItem(
-                icon = Icons.AutoMirrored.Filled.ExitToApp, label = "Log Out",textColor = Color.Red) {
+                icon = Icons.AutoMirrored.Filled.ExitToApp, label = "Log Out", textColor = Color.Red
+            ) {
                 scope.launch {
                     client.auth.signOut()
                     navController.navigate("signin") {
@@ -142,7 +151,6 @@ fun UserDrawerMenu(
         }
     }
 }
-
 
 
 @Composable
@@ -168,7 +176,8 @@ fun FarmerDrawerMenu(
             modifier = Modifier.fillMaxSize()
         ) {
             DrawerItem(
-                icon =  Icons.Default.Person, label = "User Account",textColor = textColor) {
+                icon = Icons.Default.Person, label = "User Account", textColor = textColor
+            ) {
                 scope.launch {
                     navController.navigate("signin") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
@@ -194,7 +203,8 @@ fun FarmerDrawerMenu(
             HorizontalDivider()
 
             DrawerItem(
-                icon = Icons.AutoMirrored.Filled.ExitToApp, label = "Log Out",textColor = Color.Red) {
+                icon = Icons.AutoMirrored.Filled.ExitToApp, label = "Log Out", textColor = Color.Red
+            ) {
                 scope.launch {
                     SuparBaseClient.client.auth.signOut()
                     navController.navigate("signin") {
@@ -208,7 +218,12 @@ fun FarmerDrawerMenu(
 
 
 @Composable
-fun DrawerItem(icon: ImageVector, label: String,textColor: Color = MaterialTheme.colorScheme.secondary, onClick: () -> Unit) {
+fun DrawerItem(
+    icon: ImageVector,
+    label: String,
+    textColor: Color = MaterialTheme.colorScheme.secondary,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -216,15 +231,25 @@ fun DrawerItem(icon: ImageVector, label: String,textColor: Color = MaterialTheme
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = label, style = MaterialTheme.typography.bodyLarge, color =textColor)
+        Text(text = label, style = MaterialTheme.typography.bodyLarge, color = textColor)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DrawerMenuPreview() {
-    FarmerDrawerMenu(navController = rememberNavController(), drawerState = rememberDrawerState(DrawerValue.Closed)) {}
-    UserDrawerMenu(navController = rememberNavController(), drawerState = rememberDrawerState(DrawerValue.Closed)) {}
+    FarmerDrawerMenu(
+        navController = rememberNavController(),
+        drawerState = rememberDrawerState(DrawerValue.Closed)
+    ) {}
+    UserDrawerMenu(
+        navController = rememberNavController(),
+        drawerState = rememberDrawerState(DrawerValue.Closed)
+    ) {}
 }

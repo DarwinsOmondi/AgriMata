@@ -193,7 +193,8 @@ fun ClientEditProfileScreen(onBack: () -> Unit) {
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(50.dp),
 
         ) {

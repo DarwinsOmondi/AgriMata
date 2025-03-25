@@ -36,21 +36,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
-sealed class BottomNavigationBar(val route: String, val title: String){
-    sealed class BottomNavigationItem(val broute: String, val btitle: String, val icon: ImageVector): BottomNavigationBar(broute, btitle) {
+sealed class BottomNavigationBar(val route: String, val title: String) {
+    sealed class BottomNavigationItem(
+        val broute: String,
+        val btitle: String,
+        val icon: ImageVector
+    ) : BottomNavigationBar(broute, btitle) {
         // user Bottom Navigation
         object Category : BottomNavigationItem("category", "Category", Icons.Default.Category)
-        object UserProfile:BottomNavigationItem("profile","Profile",Icons.Default.Person)
+        object UserProfile : BottomNavigationItem("profile", "Profile", Icons.Default.Person)
         object Message : BottomNavigationItem("message", "Message", Icons.AutoMirrored.Filled.Chat)
-        object Market:BottomNavigationItem("market","Market",Icons.Default.Storefront)
+        object Market : BottomNavigationItem("market", "Market", Icons.Default.Storefront)
 
         // Farmer Bottom Navigation
-        object Activity : BottomNavigationItem("activity", "Activity", Icons.AutoMirrored.Filled.ListAlt)
+        object Activity :
+            BottomNavigationItem("activity", "Activity", Icons.AutoMirrored.Filled.ListAlt)
+
         object Crops : BottomNavigationItem("crops", "Crops", Icons.Default.Agriculture)
-        object FarmerMessage : BottomNavigationItem("message", "Message", Icons.AutoMirrored.Filled.Chat)
-        object FarmerProfile : BottomNavigationItem("farmerprofile", "Profile", Icons.Default.Person)
+        object FarmerMessage :
+            BottomNavigationItem("message", "Message", Icons.AutoMirrored.Filled.Chat)
+
+        object FarmerProfile :
+            BottomNavigationItem("farmerprofile", "Profile", Icons.Default.Person)
     }
 }
+
 val listOfUserBottomNavigationItems = listOf(
     BottomNavigationBar.BottomNavigationItem.Market,
     BottomNavigationBar.BottomNavigationItem.Category,
@@ -81,7 +91,7 @@ fun UserBottomNavigationBarUi(navController: NavHostController) {
             .background(colorScheme.primary),
         contentAlignment = Alignment.Center
     )
- {
+    {
         NavigationBar(
             containerColor = colorScheme.primary,
             contentColor = colorScheme.onPrimary

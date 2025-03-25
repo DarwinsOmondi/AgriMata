@@ -53,7 +53,7 @@ fun AddProductScreen(navcontroller: NavHostController) {
     var productLocation by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var userLocation by remember { mutableStateOf<Location?>(null) }
-    val authViewModel:FarmersAuthViewModel = viewModel()
+    val authViewModel: FarmersAuthViewModel = viewModel()
     val profileImage = authViewModel.profileImage.value
 
 
@@ -67,7 +67,7 @@ fun AddProductScreen(navcontroller: NavHostController) {
         }
     }
 
-    val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
+    val decodeLocation = permissionViewModel.decodeLocation(context, userLocation)
 
     val imagePickerLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -87,254 +87,255 @@ fun AddProductScreen(navcontroller: NavHostController) {
         }
     ) { innerPadding ->
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Add Product", fontSize = 24.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Image Picker
-        Box(
+        Column(
             modifier = Modifier
-                .size(150.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray)
-                .clickable { imagePickerLauncher.launch("image/*") },
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            selectedImageUri?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = "Selected Image",
-                    modifier = Modifier.fillMaxSize()
+            Text("Add Product", fontSize = 24.sp, color = Color.Black)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Image Picker
+            Box(
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.LightGray)
+                    .clickable { imagePickerLauncher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                selectedImageUri?.let {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = "Selected Image",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } ?: Image(
+                    painter = painterResource(id = R.drawable.baseline_image_24),
+                    contentDescription = "Placeholder Image",
+                    modifier = Modifier.size(100.dp)
                 )
-            } ?: Image(
-                painter = painterResource(id = R.drawable.baseline_image_24),
-                contentDescription = "Placeholder Image",
-                modifier = Modifier.size(100.dp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            // Text Fields
+            OutlinedTextField(
+                value = productName,
+                onValueChange = { productName = it },
+                label = { Text("Product Name", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                )
             )
-        }
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        // Text Fields
-        OutlinedTextField(
-            value = productName,
-            onValueChange = { productName = it },
-            label = { Text("Product Name", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
+            OutlinedTextField(
+                value = productDescription,
+                onValueChange = { productDescription = it },
+                label = { Text("Product Description", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
             )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = productDescription,
-            onValueChange = { productDescription = it },
-            label = { Text("Product Description", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = productCategory,
-            onValueChange = { productCategory = it },
-            label = { Text("Category", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-            trailingIcon = {
-                IconButton(
-                    onClick = {categoryDropDownExpanded = true }
-                ) {
-                    Icon(
-                        Icons.Default.ArrowDropDownCircle,
-                        contentDescription = "Select Category",
-                        tint = primaryColor
-                    )
+            OutlinedTextField(
+                value = productCategory,
+                onValueChange = { productCategory = it },
+                label = { Text("Category", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
+                trailingIcon = {
+                    IconButton(
+                        onClick = { categoryDropDownExpanded = true }
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowDropDownCircle,
+                            contentDescription = "Select Category",
+                            tint = primaryColor
+                        )
+                    }
                 }
-            }
-        )
-        DropdownMenu(
-            expanded = categoryDropDownExpanded,
-            onDismissRequest = { categoryDropDownExpanded = false }
-        ) {
-            listOfCategories.forEach { category ->
-                DropdownMenuItem(
-                    text = { Text(text = category) },
-                    onClick = {
-                        productCategory = category
-                        categoryDropDownExpanded = false
-                    }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = productPrice,
-            onValueChange = { productPrice = it },
-            label = { Text("Price", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = productUnit,
-            onValueChange = { productUnit = it },
-            label = { Text("Unit (e.g., kg, pcs)", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        unitDropDownExpanded = true
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.ArrowDropDownCircle,
-                        contentDescription = "Select Unit",
-                        tint = primaryColor
-                    )
-                }
-            }
-        )
-        DropdownMenu(
-            expanded = unitDropDownExpanded,
-            onDismissRequest = { unitDropDownExpanded = false },
-        ){
-            listOfUnites.forEach { unites->
-                DropdownMenuItem(
-                    text = { Text(text = unites) },
-                    onClick = {
-                        productUnit = unites
-                        unitDropDownExpanded = false
-                    }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = productStock,
-            onValueChange = { productStock = it },
-            label = { Text("Stock Quantity", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = productLocation,
-            onValueChange = { productLocation = it },
-            label = { Text("Location", color = textColor) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        locationDialogExpanded = true
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.LocationOn,
-                        contentDescription = "Select Location",
-                        tint = primaryColor
-                    )
-                }
-            }
-        )
-        if (locationDialogExpanded) {
-            AlertDialog(
-                onDismissRequest = { locationDialogExpanded = false },
-                title = { Text("Where is the produce") },
-                text = {
-                    Text("Select your location method.")
-                },
-                confirmButton = {
-                    Button(
+            )
+            DropdownMenu(
+                expanded = categoryDropDownExpanded,
+                onDismissRequest = { categoryDropDownExpanded = false }
+            ) {
+                listOfCategories.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(text = category) },
                         onClick = {
-                            productLocation = decodeLocation
-                            locationDialogExpanded = false
+                            productCategory = category
+                            categoryDropDownExpanded = false
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = productPrice,
+                onValueChange = { productPrice = it },
+                label = { Text("Price", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = productUnit,
+                onValueChange = { productUnit = it },
+                label = { Text("Unit (e.g., kg, pcs)", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            unitDropDownExpanded = true
                         }
                     ) {
-                        Text("Use Current Location")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            locationDialogExpanded = false
-                            productLocation = ""
-                        }
-                    ) {
-                        Text("Enter Manually")
+                        Icon(
+                            Icons.Default.ArrowDropDownCircle,
+                            contentDescription = "Select Unit",
+                            tint = primaryColor
+                        )
                     }
                 }
             )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Submit Button
-        Button(
-            onClick = {
-                if (productName.isNotEmpty() && productDescription.isNotEmpty() && productPrice.isNotEmpty() && productCategory.isNotEmpty() && productUnit.isNotEmpty() && productStock.isNotEmpty() && productLocation.isNotEmpty() && selectedImageUri != null) {
-                    val product = FarmerProduct(
-                        productId = "",
-                        name = productName,
-                        description = productDescription,
-                        category = productCategory,
-                        pricePerUnit = productPrice.toDoubleOrNull() ?: 0.0,
-                        unit = productUnit,
-                        stockQuantity = productStock.toIntOrNull() ?: 0,
-                        location = productLocation.toString(),
-                        imageUrl = "",
+            DropdownMenu(
+                expanded = unitDropDownExpanded,
+                onDismissRequest = { unitDropDownExpanded = false },
+            ) {
+                listOfUnites.forEach { unites ->
+                    DropdownMenuItem(
+                        text = { Text(text = unites) },
+                        onClick = {
+                            productUnit = unites
+                            unitDropDownExpanded = false
+                        }
                     )
-                    viewModel.addFarmerProduct(context, product, selectedImageUri!!)
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Please fill all fields and select an image",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text("Add Product")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = productStock,
+                onValueChange = { productStock = it },
+                label = { Text("Stock Quantity", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = productLocation,
+                onValueChange = { productLocation = it },
+                label = { Text("Location", color = textColor) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            locationDialogExpanded = true
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = "Select Location",
+                            tint = primaryColor
+                        )
+                    }
+                }
+            )
+            if (locationDialogExpanded) {
+                AlertDialog(
+                    onDismissRequest = { locationDialogExpanded = false },
+                    title = { Text("Where is the produce") },
+                    text = {
+                        Text("Select your location method.")
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                productLocation = decodeLocation
+                                locationDialogExpanded = false
+                            }
+                        ) {
+                            Text("Use Current Location")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                locationDialogExpanded = false
+                                productLocation = ""
+                            }
+                        ) {
+                            Text("Enter Manually")
+                        }
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Submit Button
+            Button(
+                onClick = {
+                    if (productName.isNotEmpty() && productDescription.isNotEmpty() && productPrice.isNotEmpty() && productCategory.isNotEmpty() && productUnit.isNotEmpty() && productStock.isNotEmpty() && productLocation.isNotEmpty() && selectedImageUri != null) {
+                        val product = FarmerProduct(
+                            productId = "",
+                            name = productName,
+                            description = productDescription,
+                            category = productCategory,
+                            pricePerUnit = productPrice.toDoubleOrNull() ?: 0.0,
+                            unit = productUnit,
+                            stockQuantity = productStock.toIntOrNull() ?: 0,
+                            location = productLocation.toString(),
+                            imageUrl = "",
+                        )
+                        viewModel.addFarmerProduct(context, product, selectedImageUri!!)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Please fill all fields and select an image",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Add Product")
+            }
         }
-    }
     }
 }
 
-val listOfCategories = listOf<String>("Fresh Produce",
+val listOfCategories = listOf<String>(
+    "Fresh Produce",
     "Meat & Poultry",
     "Dairy & Eggs",
     "Grains & Cereals",

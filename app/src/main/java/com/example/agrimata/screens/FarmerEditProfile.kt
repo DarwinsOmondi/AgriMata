@@ -74,19 +74,20 @@ fun FarmerEditProfileScreen(onBack: () -> Unit) {
     var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     val profileImage = viewModel.profileImage.value
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null) {
-            profileImageUri = uri
-            scope.launch {
-                try {
-                    viewModel.createFramerProfileBucket()
-                    viewModel.uploadFarmerImageToSupabase(context, uri)
-                } catch (e: Exception) {
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri != null) {
+                profileImageUri = uri
+                scope.launch {
+                    try {
+                        viewModel.createFramerProfileBucket()
+                        viewModel.uploadFarmerImageToSupabase(context, uri)
+                    } catch (e: Exception) {
 
+                    }
                 }
             }
         }
-    }
 
     Column(
         modifier = Modifier
@@ -102,7 +103,11 @@ fun FarmerEditProfileScreen(onBack: () -> Unit) {
             },
             Modifier.align(Alignment.Start)
         ) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back", tint = textColor)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                contentDescription = "Back",
+                tint = textColor
+            )
         }
         Spacer(Modifier.weight(.5f))
         Text(
@@ -217,7 +222,8 @@ fun FarmerEditProfileScreen(onBack: () -> Unit) {
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(50.dp),
 
             ) {

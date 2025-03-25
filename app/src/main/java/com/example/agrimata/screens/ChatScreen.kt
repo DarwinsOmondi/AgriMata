@@ -48,85 +48,85 @@ fun ChatScreen(
     }
 
     Scaffold { innerPadding ->
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(innerPadding)
-            .background(backgroundColor)
-    ) {
-        // User Selection
-        Text(
-            text = "Select User to Chat",
-            style = MaterialTheme.typography.titleLarge,
-            color = textColor
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(innerPadding)
+                .background(backgroundColor)
+        ) {
+            // User Selection
+            Text(
+                text = "Select User to Chat",
+                style = MaterialTheme.typography.titleLarge,
+                color = textColor
+            )
 
-        LazyColumn(modifier = Modifier.weight(0.5f)) {
-            items(users) { userName ->
-                UserCard(userName = userName, onSelect = { receiverId = it })
-            }
-        }
-
-        // Chat Messages (Only shown when a user is selected)
-        if (receiverId != null) {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                reverseLayout = true
-            ) {
-                items(messages) { message ->
-                    MessageItem(
-                        message = message,
-                        isMe = message.senderPhone == senderId.value
-                    )
+            LazyColumn(modifier = Modifier.weight(0.5f)) {
+                items(users) { userName ->
+                    UserCard(userName = userName, onSelect = { receiverId = it })
                 }
             }
 
-            // Message Input Box
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BasicTextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
+            // Chat Messages (Only shown when a user is selected)
+            if (receiverId != null) {
+                LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(8.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(12.dp),
-                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(
-                    onClick = {
-                        if (messageText.text.isNotBlank() && senderId.value != null && receiverId != null) {
-                            chatViewModel.sendMessage(
-                                message = messageText.text,
-                                senderId = senderId.value!!,
-                                receiverId = receiverId!!
-                            )
-                            messageText = TextFieldValue("")
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    reverseLayout = true
                 ) {
-                    Text("Send", color = MaterialTheme.colorScheme.onPrimary)
+                    items(messages) { message ->
+                        MessageItem(
+                            message = message,
+                            isMe = message.senderPhone == senderId.value
+                        )
+                    }
+                }
+
+                // Message Input Box
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    BasicTextField(
+                        value = messageText,
+                        onValueChange = { messageText = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(12.dp),
+                        textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = {
+                            if (messageText.text.isNotBlank() && senderId.value != null && receiverId != null) {
+                                chatViewModel.sendMessage(
+                                    message = messageText.text,
+                                    senderId = senderId.value!!,
+                                    receiverId = receiverId!!
+                                )
+                                messageText = TextFieldValue("")
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("Send", color = MaterialTheme.colorScheme.onPrimary)
+                    }
                 }
             }
         }
     }
-}
 }
 
 @Composable

@@ -39,6 +39,8 @@ import com.example.agrimata.screens.CreateFarmerAccount
 import com.example.agrimata.screens.FarmerEditProfileScreen
 import com.example.agrimata.screens.FarmerProductScreen
 import com.example.agrimata.screens.FarmerProfileScreen
+import com.example.agrimata.screens.ProductCategoryScreen
+import com.example.agrimata.screens.ProductDetailScreen
 import com.example.agrimata.screens.SignInFarmerAccount
 import com.example.agrimata.screens.SignInScreen
 import com.example.agrimata.screens.SignUpScreen
@@ -114,41 +116,47 @@ fun AgriMata(modifier: Modifier = Modifier) {
             )
         }
         composable("farmerprofile") {
-                FarmerProfileScreen(navController = navController)
-            }
-        composable("createfarmeraccount"){
-                CreateFarmerAccount(
-                    onSuccess = { navController.navigate("farmeraccount")},
-                    authViewModel = farmerauthViewModel
-                )
-            }
-        composable("signinfarmeraccount"){
-            SignInFarmerAccount(
-                onNavigateToSignUp = { navController.navigate("createfarmeraccount")},
-                onSignInSuccess = { navController.navigate("activity")},
+            FarmerProfileScreen(navController = navController)
+        }
+        composable("createfarmeraccount") {
+            CreateFarmerAccount(
+                onSuccess = { navController.navigate("farmeraccount") },
                 authViewModel = farmerauthViewModel
             )
         }
-        composable("editfarmerprofile"){
+        composable("signinfarmeraccount") {
+            SignInFarmerAccount(
+                onNavigateToSignUp = { navController.navigate("createfarmeraccount") },
+                onSignInSuccess = { navController.navigate("activity") },
+                authViewModel = farmerauthViewModel
+            )
+        }
+        composable("editfarmerprofile") {
             FarmerEditProfileScreen(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable("weather"){
+        composable("weather") {
             WeatherScreen(
                 onBack = {
                     navController.popBackStack()
                 }
             )
         }
-        composable("message"){
+        composable("message") {
             ChatScreen()
         }
-        composable("market"){
+        composable("market") {
             FarmerProductScreen(navController)
         }
-        composable("activity"){
+        composable("activity") {
             AddProductScreen(navController)
+        }
+        composable("category") {
+            ProductCategoryScreen(navController)
+        }
+        composable("productDetail/{productId}") {
+            ProductDetailScreen(navController)
         }
     }
 }

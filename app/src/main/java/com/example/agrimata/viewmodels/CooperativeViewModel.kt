@@ -43,7 +43,7 @@ class CooperativeViewModel : ViewModel() {
                 val updatedMembers = group.members + userId
 
                 client.postgrest["cooperative_groups"]
-                    .update(mapOf("members" to updatedMembers)){
+                    .update(mapOf("members" to updatedMembers)) {
                         filter {
                             eq("groupId", groupId)
                         }
@@ -87,7 +87,8 @@ class CooperativeViewModel : ViewModel() {
                     }
                     .decodeSingle<CooperativeGroup>()
 
-                val updatedRevenue = group.totalRevenue + (quantity * 10.0) // Placeholder price logic
+                val updatedRevenue =
+                    group.totalRevenue + (quantity * 10.0) // Placeholder price logic
                 client.postgrest["cooperative_groups"]
                     .update(mapOf("totalRevenue" to updatedRevenue))
                     {

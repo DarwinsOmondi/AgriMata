@@ -24,7 +24,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.io.IOException
 import java.util.UUID
 
-class FarmersAuthViewModel(): ViewModel() {
+class FarmersAuthViewModel() : ViewModel() {
     private val _userState = mutableStateOf<UserState>(UserState.Loading)
     val userState: State<UserState> = _userState
 
@@ -35,7 +35,7 @@ class FarmersAuthViewModel(): ViewModel() {
     val profileImage: State<ByteArray?> = _profileImage
 
     private val _farmers = MutableStateFlow<List<Farmer>>(emptyList())
-    val farmers : StateFlow<List<Farmer>> = _farmers
+    val farmers: StateFlow<List<Farmer>> = _farmers
 
     private val _farmerUri = mutableStateOf<ByteArray?>(null)
     val farmerUri: State<ByteArray?> = _farmerUri
@@ -46,7 +46,13 @@ class FarmersAuthViewModel(): ViewModel() {
         fetchClientImage()
     }
 
-    fun signUpFarmer(userName: String, userEmail: String, userPassword: String, userPhone: String?,role: String?) {
+    fun signUpFarmer(
+        userName: String,
+        userEmail: String,
+        userPassword: String,
+        userPhone: String?,
+        role: String?
+    ) {
         viewModelScope.launch {
             try {
                 client.auth.signUpWith(io.github.jan.supabase.auth.providers.builtin.Email) {
@@ -107,13 +113,14 @@ class FarmersAuthViewModel(): ViewModel() {
                     _userState.value = UserState.Error("User is not a Farmer")
                 }
             } catch (e: Exception) {
-                _userState.value = UserState.Error("Error checking farmer role: ${e.localizedMessage}")
+                _userState.value =
+                    UserState.Error("Error checking farmer role: ${e.localizedMessage}")
             }
         }
     }
 
 
-    fun resetPassword(email: String,password: String) {
+    fun resetPassword(email: String, password: String) {
         viewModelScope.launch {
             try {
                 client.auth.resetPasswordForEmail(email)
@@ -121,7 +128,7 @@ class FarmersAuthViewModel(): ViewModel() {
                     this.password = password
                 }
                 _userState.value = UserState.Success("Password reset email sent successfully")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e("SupabaseResetPassword", "Error: ${e.message}")
                 _userState.value = UserState.Error("Reset password failed: ${e.localizedMessage}")
             }
@@ -143,16 +150,15 @@ class FarmersAuthViewModel(): ViewModel() {
         }
     }
 
-    fun addFarmerToListOfFarmers(farmer: Farmer){
+    fun addFarmerToListOfFarmers(farmer: Farmer) {
         viewModelScope.launch {
             try {
                 client.postgrest["farmers"].insert(farmer)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e("SupabaseAddFarmer", "Error: ${e.message}")
             }
         }
     }
-
 
 
     private fun observeSession() {
@@ -167,9 +173,9 @@ class FarmersAuthViewModel(): ViewModel() {
         }
     }
 
-    fun updateFarmerDetail(name: String, email: String, phone: String){
+    fun updateFarmerDetail(name: String, email: String, phone: String) {
         viewModelScope.launch {
-            try{
+            try {
                 client.auth.updateUser {
                     data = buildJsonObject {
                         put("name", JsonPrimitive(name))
@@ -178,46 +184,50 @@ class FarmersAuthViewModel(): ViewModel() {
                     }
                 }
                 _userState.value = UserState.Success("User details updated successfully")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _userState.value = UserState.Error("Update failed: ${e.localizedMessage}")
             }
         }
     }
 
-    fun createFramerProfileBucket(){
+    fun createFramerProfileBucket() {
         viewModelScope.launch {
-            try{
+            try {
                 val user = client.auth.currentSessionOrNull()?.user
-                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content
+                    ?: throw Exception("User email not found")
 
                 val existingBuckets = client.storage.retrieveBuckets()
                 if (existingBuckets.any { it.id == bucketName }) {
                     _userState.value = UserState.Success("Bucket '$bucketName' already exists")
                     return@launch
-                }else{
+                } else {
                     client.storage.createBucket(id = bucketName) {
                         public = false
                         fileSizeLimit = 10.megabytes
                     }
-                    _userState.value = UserState.Success("Bucket '$bucketName' created successfully")
+                    _userState.value =
+                        UserState.Success("Bucket '$bucketName' created successfully")
                 }
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _userState.value = UserState.Error("Bucket creation failed: ${e.message}")
             }
         }
     }
 
-    fun uploadFarmerImageToSupabase(context: Context,imageUri: Uri){
+    fun uploadFarmerImageToSupabase(context: Context, imageUri: Uri) {
         viewModelScope.launch {
-            try{
+            try {
                 val user = client.auth.currentSessionOrNull()?.user
-                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content
+                    ?: throw Exception("User email not found")
                 val imageFileName = "${UUID.randomUUID()}.jpg"
                 val bucket = client.storage[bucketName]
 
-                val imageByteArray = context.contentResolver.openInputStream(imageUri)?.use { (it.readBytes()) }
-                    ?: throw IOException("Failed to read image file")
+                val imageByteArray =
+                    context.contentResolver.openInputStream(imageUri)?.use { (it.readBytes()) }
+                        ?: throw IOException("Failed to read image file")
 
                 try {
                     bucket.delete(imageFileName)
@@ -231,7 +241,7 @@ class FarmersAuthViewModel(): ViewModel() {
                 }
                 _userState.value = UserState.Success("Image uploaded successfully to bucket")
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _userState.value = UserState.Error("Image upload failed: ${e.message}")
             }
         }
@@ -241,7 +251,8 @@ class FarmersAuthViewModel(): ViewModel() {
         viewModelScope.launch {
             try {
                 val user = client.auth.currentSessionOrNull()?.user
-                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content ?: throw Exception("User email not found")
+                val bucketName = user?.userMetadata?.get("email")?.jsonPrimitive?.content
+                    ?: throw Exception("User email not found")
                 val imageFileName = user.userMetadata?.get("profile_image")?.jsonPrimitive?.content
 
                 if (!imageFileName.isNullOrBlank()) {

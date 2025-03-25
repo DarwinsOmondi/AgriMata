@@ -126,9 +126,9 @@ fun FarmerProfileScreen(navController: NavHostController){
         ){ innerPadding ->
             Column(
                 modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(backgroundColor),
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(backgroundColor),
                 horizontalAlignment = Alignment.CenterHorizontally){
                 Spacer(Modifier.padding(18.dp))
                 when(farmerProfileState){
@@ -218,7 +218,10 @@ fun FarmerProfileInfo(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+        Row(Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start)
+            .padding(16.dp)){
             Icon(
                 imageVector = Icons.Filled.Person,
                 contentDescription = "Profile Icon",
@@ -230,7 +233,10 @@ fun FarmerProfileInfo(
                 Text(text = name, color = textColor)
             }
         }
-        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+        Row(Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start)
+            .padding(16.dp)){
             Icon(
                 imageVector = Icons.Filled.Email,
                 contentDescription = "Email Icon",
@@ -242,7 +248,10 @@ fun FarmerProfileInfo(
                 Text(text = email, color = textColor)
             }
         }
-        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+        Row(Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start)
+            .padding(16.dp)){
             Icon(
                 imageVector = Icons.Filled.Phone,
                 contentDescription = "Phone Icon",
@@ -255,7 +264,10 @@ fun FarmerProfileInfo(
             }
         }
         if (farmerLocation != null) {
-            Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Row(Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)){
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location Icon",
@@ -268,7 +280,10 @@ fun FarmerProfileInfo(
                 }
             }
         } else {
-            Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Row(Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)){
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location Icon",

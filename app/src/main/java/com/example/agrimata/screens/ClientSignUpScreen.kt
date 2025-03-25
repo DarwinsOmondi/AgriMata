@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: AgriMataClientAuth) {
+fun SignUpScreen(onNavigateToSignIn: () -> Unit, authViewModel: AgriMataClientAuth) {
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -70,193 +70,227 @@ fun SignUpScreen(onNavigateToSignIn: () -> Unit,authViewModel: AgriMataClientAut
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.secondary
 
-        LaunchedEffect(Unit) {
-            isLoading = true
-            authViewModel.checkUserLoggedIn()
-            isLoading = false
-        }
+    LaunchedEffect(Unit) {
+        isLoading = true
+        authViewModel.checkUserLoggedIn()
+        isLoading = false
+    }
 
-        Scaffold(modifier = Modifier.fillMaxSize()
-        ) { innerPadding ->
-            Column(
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .background(primaryColor),
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.5f)
-                        .background(primaryColor),
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(modifier = Modifier.padding(16.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.ShoppingBasket,
-                                contentDescription = "shoppingBasket",
-                                tint = secondaryColor,
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingBasket,
+                            contentDescription = "shoppingBasket",
+                            tint = secondaryColor,
 
-                                )
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text(
-                                text = "AgriMata",
-                                color = textColor,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 1.dp)
                             )
-                        }
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                        Box(Modifier.align(Alignment.CenterHorizontally)){
-                            Icon(
-                                imageVector = Icons.Default.ShoppingBasket,
-                                contentDescription = "shoppingBasket",
-                                tint = secondaryColor,
-                                modifier = Modifier.align(Alignment.Center)
-                                    .width(100.dp)
-                                    .height(100.dp)
-                            )
-                        }
+                        Text(
+                            text = "AgriMata",
+                            color = textColor,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 1.dp)
+                        )
+                    }
 
-                        Box(
+                    Box(Modifier.align(Alignment.CenterHorizontally)) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingBasket,
+                            contentDescription = "shoppingBasket",
+                            tint = secondaryColor,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = "AgriMata brings the marketplace to your fingertips \uD83D\uDCF1.",
-                                color = textColor,
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                                .align(Alignment.Center)
+                                .width(100.dp)
+                                .height(100.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "AgriMata brings the marketplace to your fingertips \uD83D\uDCF1.",
+                            color = textColor,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
+            }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.5f)
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                        OutlinedTextField(
-                            value = name,
-                            onValueChange = { name = it },
-                            label = { Text("Name",color = textColor) },
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor
-                            ),
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Name", color = textColor) },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = textColor,
+                            unfocusedTextColor = textColor
+                        ),
 
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-                        OutlinedTextField(
-                            value = email,
-                            onValueChange = { email = it },
-                            label = { Text("Email",color = textColor) },
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor
-                            ),
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email", color = textColor) },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = textColor,
+                            unfocusedTextColor = textColor
+                        ),
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        OutlinedTextField(
-                            value = phone,
-                            onValueChange = { phone = it },
-                            label = { Text("Phone",color = textColor) },
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor
-                            ),
-                        )
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = { phone = it },
+                        label = { Text("Phone", color = textColor) },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = textColor,
+                            unfocusedTextColor = textColor
+                        ),
+                    )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        OutlinedTextField(
-                            value = password,
-                            onValueChange = { password = it },
-                            label = { Text("Password",color = textColor) },
-                            visualTransformation = if (!togglePasswordVisibility) PasswordVisualTransformation() else VisualTransformation.None,
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor
-                            ),
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        togglePasswordVisibility = !togglePasswordVisibility
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = if (togglePasswordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                        contentDescription = "Toggle Password Visibility",
-                                        tint = textColor
-                                    )
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password", color = textColor) },
+                        visualTransformation = if (!togglePasswordVisibility) PasswordVisualTransformation() else VisualTransformation.None,
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedTextColor = textColor,
+                            unfocusedTextColor = textColor
+                        ),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    togglePasswordVisibility = !togglePasswordVisibility
                                 }
+                            ) {
+                                Icon(
+                                    imageVector = if (togglePasswordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = "Toggle Password Visibility",
+                                    tint = textColor
+                                )
                             }
-                        )
+                        }
+                    )
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                        if (isLoading) {
-                            CircularProgressIndicator()
-                        } else {
-                            Button(onClick = {
+                    if (isLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Button(
+                            onClick = {
                                 scope.launch {
                                     if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && phone.isNotBlank()) {
-                                        authViewModel.SignUpUser(name, email, password, phone,"client")
-                                        Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
+                                        authViewModel.SignUpUser(
+                                            name,
+                                            email,
+                                            password,
+                                            phone,
+                                            "client"
+                                        )
+                                        Toast.makeText(
+                                            context,
+                                            "Sign Up Successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         if (userState is UserState.Success) {
                                             onNavigateToSignIn()
                                         } else {
-                                            Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                "Sign Up Failed",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
-                                    }else{
-                                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Please fill all fields",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
                             },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(primaryColor)) {
-                                Text("Sign Up", color = textColor)
-                            }
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(primaryColor)
+                        ) {
+                            Text("Sign Up", color = textColor)
                         }
+                    }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                        Row {
-                            Text("Already have an account?", color = textColor,modifier = Modifier.padding(top = 14.dp))
+                    Row {
+                        Text(
+                            "Already have an account?",
+                            color = textColor,
+                            modifier = Modifier.padding(top = 14.dp)
+                        )
 
-                            TextButton(onClick = { onNavigateToSignIn() }) {
-                                Text("Sign in", style = MaterialTheme.typography.bodyMedium,color = primaryColor)
-                            }
+                        TextButton(onClick = { onNavigateToSignIn() }) {
+                            Text(
+                                "Sign in",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = primaryColor
+                            )
                         }
-                        if (error.isNotEmpty()) {
-                            Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
-                        }
+                    }
+                    if (error.isNotEmpty()) {
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
         }
+    }
 }
 
 @Preview(showBackground = true)

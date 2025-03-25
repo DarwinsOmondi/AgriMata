@@ -33,6 +33,9 @@ class FarmerProductViewModel : ViewModel() {
     private val _productsNearYou = MutableStateFlow<List<FarmerProduct>>(emptyList())
     val productsNearYou: StateFlow<List<FarmerProduct>> = _productsNearYou
 
+    private val _productByCategory = MutableStateFlow<List<FarmerProduct>>(emptyList())
+    val productByCategory: StateFlow<List<FarmerProduct>> = _productByCategory
+
     private val _productUploadState = MutableStateFlow("")
     val productUploadState: StateFlow<String> = _productUploadState
 
@@ -104,6 +107,22 @@ class FarmerProductViewModel : ViewModel() {
                 _errorState.value = "Error: ${e.message}"
             } finally {
                 _loadingState.value = false
+            }
+        }
+    }
+
+    fun fetchFarmProductByCategory(category: String){
+        viewModelScope.launch {
+            try {
+               val productsbyCategory = client.postgrest["farmproducts"].select(){
+                  filter {
+                      eq("category",category)
+                  }
+              }.decodeList<FarmerProduct>()
+                _productByCategory.value = productsbyCategory
+                _errorState.value = "Products fetched successfully"
+            }catch (e: Exception){
+                _errorState.value = "${e.message}"
             }
         }
     }

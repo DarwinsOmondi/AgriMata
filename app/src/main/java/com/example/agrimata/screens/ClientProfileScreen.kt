@@ -83,9 +83,9 @@ fun ClientProfileScreen(
 
 
     LaunchedEffect(Unit) {
-            permissionViewModel.getUserLocation(context) { location ->
-                userLocation = location
-            }
+        permissionViewModel.getUserLocation(context) { location ->
+            userLocation = location
+        }
     }
 
     ModalNavigationDrawer(
@@ -103,7 +103,8 @@ fun ClientProfileScreen(
                     colors = TopAppBarDefaults.topAppBarColors(
                         primaryColor,
                     ),
-                    modifier = Modifier.background(primaryColor)
+                    modifier = Modifier
+                        .background(primaryColor)
                         .padding(end = 8.dp),
                     navigationIcon = {
                         IconButton(
@@ -191,8 +192,16 @@ fun LoadingState() {
 }
 
 @Composable
-fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,userLocation: Location?, permissionViewModel: PermissionViewModel = viewModel(), context: Context) {
-    val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
+fun ProfileInfo(
+    name: String,
+    email: String,
+    phone: String,
+    imageUrl: String,
+    userLocation: Location?,
+    permissionViewModel: PermissionViewModel = viewModel(),
+    context: Context
+) {
+    val decodeLocation = permissionViewModel.decodeLocation(context, userLocation)
     val textColor = MaterialTheme.colorScheme.secondary
     Column(
         modifier = Modifier
@@ -201,7 +210,10 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,use
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+        Row(Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start)
+            .padding(16.dp)) {
             Icon(
                 imageVector = Icons.Filled.Person,
                 contentDescription = "Profile Icon",
@@ -213,19 +225,25 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,use
                 Text(text = name, color = textColor)
             }
         }
-        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+        Row(Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start)
+            .padding(16.dp)) {
             Icon(
                 imageVector = Icons.Filled.Email,
                 contentDescription = "Email Icon",
                 tint = textColor
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Column{
+            Column {
                 Text("Email", color = textColor)
                 Text(text = email, color = textColor)
             }
         }
-        Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+        Row(Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start)
+            .padding(16.dp)) {
             Icon(
                 imageVector = Icons.Filled.Phone,
                 contentDescription = "Phone Icon",
@@ -238,7 +256,10 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,use
             }
         }
         if (userLocation != null) {
-            Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Row(Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location Icon",
@@ -251,7 +272,10 @@ fun ProfileInfo(name: String, email: String, phone: String, imageUrl: String,use
                 }
             }
         } else {
-            Row(Modifier.fillMaxWidth().align(Alignment.Start).padding(16.dp)){
+            Row(Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location Icon",
@@ -284,5 +308,5 @@ fun ErrorState(errorMessage: String) {
 @Preview(showBackground = true)
 @Composable
 fun ClientProfileScreenPreview() {
-    ClientProfileScreen( navController = NavHostController(LocalContext.current))
+    ClientProfileScreen(navController = NavHostController(LocalContext.current))
 }

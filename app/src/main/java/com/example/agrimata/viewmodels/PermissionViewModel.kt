@@ -44,7 +44,11 @@ class PermissionViewModel : ViewModel() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         ) {
-            Toast.makeText(context, "Location permission is required for this app", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Location permission is required for this app",
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
             ActivityCompat.requestPermissions(
                 context,
@@ -56,20 +60,48 @@ class PermissionViewModel : ViewModel() {
 
 
     fun checkCameraAndStoragePermissions(context: Context): Boolean {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
     }
 
 
     fun requestCameraAndStoragePermissions(context: Context) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(context as Activity, Manifest.permission.CAMERA) ||
-            ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.READ_EXTERNAL_STORAGE) ||
-            ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-            ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.RECORD_AUDIO)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                context as Activity,
+                Manifest.permission.CAMERA
+            ) ||
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) ||
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) ||
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.RECORD_AUDIO
+            )
         ) {
-            Toast.makeText(context, "Camera, storage, and audio permissions are required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Camera, storage, and audio permissions are required",
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
             ActivityCompat.requestPermissions(
                 context,
@@ -98,7 +130,11 @@ class PermissionViewModel : ViewModel() {
                 if (location != null) {
                     onLocationReceived(location)
                 } else {
-                    Toast.makeText(context, "Location is unavailable, try moving", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Location is unavailable, try moving",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             .addOnFailureListener {

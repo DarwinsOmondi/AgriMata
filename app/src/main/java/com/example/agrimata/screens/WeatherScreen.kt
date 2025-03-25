@@ -21,12 +21,18 @@ import com.example.agrimata.viewmodels.PermissionViewModel
 import com.example.agrimata.viewmodels.WeatherViewModel
 
 @Composable
-fun WeatherScreen(onBack:() -> Unit) {
+fun WeatherScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val weatherViewModel: WeatherViewModel = viewModel()
     val locationViewModel: PermissionViewModel = viewModel()
 
-    val locationPermissionGranted by remember { mutableStateOf(locationViewModel.checkUserLocationPermission(context)) }
+    val locationPermissionGranted by remember {
+        mutableStateOf(
+            locationViewModel.checkUserLocationPermission(
+                context
+            )
+        )
+    }
     var userLocation by remember { mutableStateOf<Location?>(null) }
     val weatherState by weatherViewModel.weatherState
     val errorMessage by weatherViewModel.errorMessage
@@ -52,8 +58,8 @@ fun WeatherScreen(onBack:() -> Unit) {
             locationViewModel.requestUserLocationPermission(context)
         }
     }
-    Scaffold(Modifier.fillMaxSize()){ innerPadding ->
-        Column(Modifier.padding(innerPadding)){
+    Scaffold(Modifier.fillMaxSize()) { innerPadding ->
+        Column(Modifier.padding(innerPadding)) {
             Spacer(modifier = Modifier.height(16.dp))
             IconButton(
                 onClick = {
@@ -61,7 +67,11 @@ fun WeatherScreen(onBack:() -> Unit) {
                 },
                 Modifier.align(Alignment.Start)
             ) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back", tint = textColor)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                    contentDescription = "Back",
+                    tint = textColor
+                )
             }
             Spacer(Modifier.weight(.5f))
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -70,18 +80,33 @@ fun WeatherScreen(onBack:() -> Unit) {
                     userLocation == null -> {
                         Text(text = "Fetching location...")
                     }
+
                     errorMessage != null -> {
                         Text(text = "Error: ${errorMessage}")
                     }
+
                     weatherState == null -> {
                         Text(text = "Fetching weather...")
                     }
+
                     else -> {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "Weather: ${weatherState?.hourly?.temperatures?.get(0)}°C",color = textColor)
-                            Text(text = "Rain: ${weatherState?.hourly?.rain?.get(0)} mm",color = textColor)
-                            Text(text = "Wind Speed: ${weatherState?.hourly?.windSpeed?.get(0)} m/s",color = textColor)
-                            Text(text = "Cloud Cover: ${weatherState?.hourly?.cloudCover?.get(0)}%",color = textColor)
+                            Text(
+                                text = "Weather: ${weatherState?.hourly?.temperatures?.get(0)}°C",
+                                color = textColor
+                            )
+                            Text(
+                                text = "Rain: ${weatherState?.hourly?.rain?.get(0)} mm",
+                                color = textColor
+                            )
+                            Text(
+                                text = "Wind Speed: ${weatherState?.hourly?.windSpeed?.get(0)} m/s",
+                                color = textColor
+                            )
+                            Text(
+                                text = "Cloud Cover: ${weatherState?.hourly?.cloudCover?.get(0)}%",
+                                color = textColor
+                            )
                         }
                     }
                 }

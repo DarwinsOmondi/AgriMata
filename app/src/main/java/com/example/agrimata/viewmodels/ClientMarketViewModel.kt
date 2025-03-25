@@ -30,7 +30,8 @@ class BuyerMarketplaceViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _orderState.value = "Fetching Products..."
-                val productList = client.postgrest["farmproducts"].select().decodeList<FarmerProduct>()
+                val productList =
+                    client.postgrest["farmproducts"].select().decodeList<FarmerProduct>()
                 _products.value = productList
                 _orderState.value = "Products Loaded Successfully"
             } catch (e: Exception) {
@@ -70,11 +71,22 @@ class BuyerMarketplaceViewModel : ViewModel() {
             try {
                 _orderState.value = "Searching Products..."
                 val filteredProducts = client.postgrest["farmproducts"]
-                    .select(columns = Columns.list("id", "name", "location", "pricePerUnit", "imageUrl")) {
+                    .select(
+                        columns = Columns.list(
+                            "id",
+                            "name",
+                            "location",
+                            "pricePerUnit",
+                            "imageUrl"
+                        )
+                    ) {
                         filter {
                             or {
                                 ilike("name", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
-                                ilike("location", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
+                                ilike(
+                                    "location",
+                                    "%${query.replace("%", "\\%").replace("_", "\\_")}%"
+                                )
                             }
                         }
                     }

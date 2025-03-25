@@ -15,7 +15,7 @@ class GrantsViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val grants = client.postgrest["grants_subsidies"]
-                    .select() {filter { eq("status", "open") } }
+                    .select() { filter { eq("status", "open") } }
                     .decodeList<Grant>()
                 onSuccess(grants)
             } catch (e: Exception) {
@@ -29,14 +29,14 @@ class GrantsViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val grant = client.postgrest["grants_subsidies"]
-                    .select() {filter { eq("grantId", grantId) }}
+                    .select() { filter { eq("grantId", grantId) } }
                     .decodeSingle<Grant>()
 
                 val updatedApplicants = grant.applicants + userId
 
                 client.postgrest["grants_subsidies"]
                     .update(mapOf("applicants" to updatedApplicants))
-                    {filter { eq("grantId", grantId) } }
+                    { filter { eq("grantId", grantId) } }
 
                 Log.d("Grants", "User $userId applied for grant $grantId")
             } catch (e: Exception) {

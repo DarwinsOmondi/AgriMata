@@ -109,5 +109,17 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
     implementation("com.google.accompanist:accompanist-swiperefresh:0.31.1-alpha")
+
+    val room_version = "2.6.1" // Use the latest version
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+
+    // Kotlin Extensions & Coroutines support
+    implementation("androidx.room:room-ktx:$room_version")
+
+    // Paging support (if needed)
+    implementation("androidx.room:room-paging:$room_version")
 }
 
