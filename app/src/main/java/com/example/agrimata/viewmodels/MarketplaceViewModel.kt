@@ -46,8 +46,6 @@ class FarmerProductViewModel : ViewModel() {
     val errorState: StateFlow<String?> = _errorState
 
 
-
-
     init {
         fetchFarmerProducts()
         checkForDeals()
@@ -56,8 +54,9 @@ class FarmerProductViewModel : ViewModel() {
     private suspend fun uploadImageToSupabase(context: Context, imageUri: Uri): String {
         val imageFileName = "${UUID.randomUUID()}.jpg"
         val bucket = client.storage[bucketName]
-        val imageByteArray = context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
-            ?: throw IOException("Failed to read image file")
+        val imageByteArray =
+            context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
+                ?: throw IOException("Failed to read image file")
 
         bucket.upload(imageFileName, imageByteArray) {
             upsert = true
@@ -111,17 +110,17 @@ class FarmerProductViewModel : ViewModel() {
         }
     }
 
-    fun fetchFarmProductByCategory(category: String){
+    fun fetchFarmProductByCategory(category: String) {
         viewModelScope.launch {
             try {
-               val productsbyCategory = client.postgrest["farmproducts"].select(){
-                  filter {
-                      eq("category",category)
-                  }
-              }.decodeList<FarmerProduct>()
+                val productsbyCategory = client.postgrest["farmproducts"].select() {
+                    filter {
+                        eq("category", category)
+                    }
+                }.decodeList<FarmerProduct>()
                 _productByCategory.value = productsbyCategory
                 _errorState.value = "Products fetched successfully"
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _errorState.value = "${e.message}"
             }
         }
@@ -131,18 +130,31 @@ class FarmerProductViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val filteredProducts = client.postgrest["farmproducts"]
-                    .select(columns = Columns.list("id", "name", "category", "pricePerUnit", "imageUrl","unit","stockQuantity")) {
+                    .select(
+                        columns = Columns.list(
+                            "id",
+                            "name",
+                            "category",
+                            "pricePerUnit",
+                            "imageUrl",
+                            "unit",
+                            "stockQuantity"
+                        )
+                    ) {
                         filter {
                             or {
                                 ilike("name", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
-                                ilike("location", "%${query.replace("%", "\\%").replace("_", "\\_")}%")
+                                ilike(
+                                    "location",
+                                    "%${query.replace("%", "\\%").replace("_", "\\_")}%"
+                                )
                             }
                         }
                     }
                     .decodeList<FarmerProduct>()
-                if(filteredProducts.isNotEmpty()){
+                if (filteredProducts.isNotEmpty()) {
                     _farmerProducts.value = filteredProducts
-                }else{
+                } else {
                     _farmerProducts.value = _farmerProducts.value
                 }
             } catch (e: Exception) {
@@ -154,9 +166,22 @@ class FarmerProductViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val productsNearYou = client.postgrest["farmproducts"]
-                    .select(columns = Columns.list("id", "name", "category", "pricePerUnit", "imageUrl", "unit", "stockQuantity")) {
+                    .select(
+                        columns = Columns.list(
+                            "id",
+                            "name",
+                            "category",
+                            "pricePerUnit",
+                            "imageUrl",
+                            "unit",
+                            "stockQuantity"
+                        )
+                    ) {
                         filter {
-                            ilike("location", "%${location.replace("%", "\\%").replace("_", "\\_")}%")
+                            ilike(
+                                "location",
+                                "%${location.replace("%", "\\%").replace("_", "\\_")}%"
+                            )
                         }
                     }
                     .decodeList<FarmerProduct>()
@@ -194,7 +219,11 @@ class FarmerProductViewModel : ViewModel() {
         }
     }
 
-    fun updateFarmerProduct(context: Context, updatedProduct: FarmerProduct, newImageUri: Uri? = null) {
+    fun updateFarmerProduct(
+        context: Context,
+        updatedProduct: FarmerProduct,
+        newImageUri: Uri? = null
+    ) {
         viewModelScope.launch {
             try {
                 _loadingState.value = true
@@ -226,7 +255,17 @@ class FarmerProductViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val products = client.postgrest["farmproducts"]
-                    .select(columns = Columns.list("id", "name", "category", "pricePerUnit", "imageUrl","unit","stockQuantity"))
+                    .select(
+                        columns = Columns.list(
+                            "id",
+                            "name",
+                            "category",
+                            "pricePerUnit",
+                            "imageUrl",
+                            "unit",
+                            "stockQuantity"
+                        )
+                    )
                     .decodeList<FarmerProduct>()
 
                 val cheapestProducts = products

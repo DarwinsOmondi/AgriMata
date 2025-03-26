@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,7 +32,9 @@ import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.model.UserState
 import com.example.agrimata.network.SuparBaseClient.client
+import com.example.agrimata.roomdb.CartProductViewModelFactory
 import com.example.agrimata.screens.AddProductScreen
+import com.example.agrimata.screens.CartProductScreen
 import com.example.agrimata.screens.ChatScreen
 import com.example.agrimata.screens.ClientEditProfileScreen
 import com.example.agrimata.screens.ClientProfileScreen
@@ -46,18 +49,22 @@ import com.example.agrimata.screens.SignInScreen
 import com.example.agrimata.screens.SignUpScreen
 import com.example.agrimata.screens.WeatherScreen
 import com.example.agrimata.viewmodels.AgriMataClientAuth
+import com.example.agrimata.viewmodels.CartProductViewModel
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import io.github.jan.supabase.auth.auth
 
 
 class MainActivity : ComponentActivity() {
+    private val cartViewModel: CartProductViewModel by viewModels {
+        CartProductViewModelFactory(application)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AgriMataTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AgriMata(modifier = Modifier.padding(innerPadding))
+                    AgriMata(modifier = Modifier.padding(innerPadding),cartViewModel)
                 }
             }
         }
@@ -65,7 +72,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AgriMata(modifier: Modifier = Modifier) {
+fun AgriMata(modifier: Modifier = Modifier,cartViewModel: CartProductViewModel) {
     val navController = rememberNavController()
     val authViewModel: AgriMataClientAuth = viewModel()
     val farmerauthViewModel: FarmersAuthViewModel = viewModel()
@@ -147,7 +154,7 @@ fun AgriMata(modifier: Modifier = Modifier) {
             ChatScreen()
         }
         composable("market") {
-            FarmerProductScreen(navController)
+            FarmerProductScreen(navController,cartViewModel)
         }
         composable("activity") {
             AddProductScreen(navController)
@@ -157,6 +164,9 @@ fun AgriMata(modifier: Modifier = Modifier) {
         }
         composable("productDetail/{productId}") {
             ProductDetailScreen(navController)
+        }
+        composable("cartScreen"){
+            CartProductScreen(navController,cartViewModel)
         }
     }
 }

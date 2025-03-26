@@ -64,24 +64,23 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FarmerProfileScreen(navController: NavHostController){
-    val authViewModel:FarmersAuthViewModel = viewModel()
+fun FarmerProfileScreen(navController: NavHostController) {
+    val authViewModel: FarmersAuthViewModel = viewModel()
     val profileViewModel: ProfileViewModel = viewModel()
     val premissonViewModel: PermissionViewModel = viewModel()
     val farmerProfileState = profileViewModel.userProfileState.value
     val context = LocalContext.current
     val profileImage = authViewModel.profileImage.value
     val scope = rememberCoroutineScope()
-    var farmerLocation by remember { mutableStateOf<Location?>(null)}
+    var farmerLocation by remember { mutableStateOf<Location?>(null) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
 
 
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.secondary
-    val decodeLocation = premissonViewModel.decodeLocation(context,farmerLocation)
+    val decodeLocation = premissonViewModel.decodeLocation(context, farmerLocation)
 
     LaunchedEffect(Unit) {
         premissonViewModel.getUserLocation(context) { location ->
@@ -123,18 +122,20 @@ fun FarmerProfileScreen(navController: NavHostController){
             bottomBar = {
                 FarmerBottomNavigationBarUi(navController)
             }
-        ){ innerPadding ->
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .background(backgroundColor),
-                horizontalAlignment = Alignment.CenterHorizontally){
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Spacer(Modifier.padding(18.dp))
-                when(farmerProfileState){
+                when (farmerProfileState) {
                     is UserProfileState.Loading -> {
                         LoadingState()
                     }
+
                     is UserProfileState.Success -> {
 
 
@@ -147,7 +148,7 @@ fun FarmerProfileScreen(navController: NavHostController){
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
                             )
-                        }else {
+                        } else {
                             AsyncImage(
                                 model = R.drawable.baseline_person_24,
                                 contentDescription = "Profile Placeholder",
@@ -174,7 +175,7 @@ fun FarmerProfileScreen(navController: NavHostController){
                         )
                     }
 
-                    is UserProfileState.Error ->{
+                    is UserProfileState.Error -> {
                         ErrorState(errorMessage = farmerProfileState.message)
                     }
                 }
@@ -208,9 +209,9 @@ fun FarmerProfileInfo(
     context: Context,
     newFarmer: Farmer
 ) {
-    val decodeLocation = permissionViewModel.decodeLocation(context,farmerLocation)
+    val decodeLocation = permissionViewModel.decodeLocation(context, farmerLocation)
     val textColor = MaterialTheme.colorScheme.secondary
-    val authViewModel:FarmersAuthViewModel = viewModel()
+    val authViewModel: FarmersAuthViewModel = viewModel()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -218,10 +219,12 @@ fun FarmerProfileInfo(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(Modifier
-            .fillMaxWidth()
-            .align(Alignment.Start)
-            .padding(16.dp)){
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)
+        ) {
             Icon(
                 imageVector = Icons.Filled.Person,
                 contentDescription = "Profile Icon",
@@ -233,25 +236,29 @@ fun FarmerProfileInfo(
                 Text(text = name, color = textColor)
             }
         }
-        Row(Modifier
-            .fillMaxWidth()
-            .align(Alignment.Start)
-            .padding(16.dp)){
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)
+        ) {
             Icon(
                 imageVector = Icons.Filled.Email,
                 contentDescription = "Email Icon",
                 tint = textColor
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Column{
+            Column {
                 Text("Email", color = textColor)
                 Text(text = email, color = textColor)
             }
         }
-        Row(Modifier
-            .fillMaxWidth()
-            .align(Alignment.Start)
-            .padding(16.dp)){
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .padding(16.dp)
+        ) {
             Icon(
                 imageVector = Icons.Filled.Phone,
                 contentDescription = "Phone Icon",
@@ -264,10 +271,12 @@ fun FarmerProfileInfo(
             }
         }
         if (farmerLocation != null) {
-            Row(Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start)
-                .padding(16.dp)){
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Start)
+                    .padding(16.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location Icon",
@@ -280,10 +289,12 @@ fun FarmerProfileInfo(
                 }
             }
         } else {
-            Row(Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start)
-                .padding(16.dp)){
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Start)
+                    .padding(16.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Location Icon",

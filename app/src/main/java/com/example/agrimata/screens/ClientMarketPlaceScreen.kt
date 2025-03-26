@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.ShoppingBasket
@@ -42,18 +41,21 @@ import com.example.agrimata.model.FarmerProduct
 import com.example.agrimata.model.UserProfileState
 import com.example.agrimata.model.listOfCategoryItems
 import com.example.agrimata.network.SuparBaseClient.client
+import com.example.agrimata.roomdb.CartProduct
 import com.example.agrimata.viewmodels.AgriMataClientAuth
+import com.example.agrimata.viewmodels.CartProductViewModel
 import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
 import com.example.agrimata.viewmodels.ProfileViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.storage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FarmerProductScreen(navController: NavHostController) {
+fun FarmerProductScreen(navController: NavHostController,cartViewModel: CartProductViewModel) {
     val context = LocalContext.current
     val profileViewModel: ProfileViewModel = viewModel()
     val permissionViewModel: PermissionViewModel = viewModel()
@@ -69,8 +71,9 @@ fun FarmerProductScreen(navController: NavHostController) {
     val profileImage = authViewModel.profileImage.value
     var isRefreshing by remember { mutableStateOf(false) }
     var userLocation by remember { mutableStateOf<Location?>(null) }
-    var noItems by remember { mutableIntStateOf(0) }
-    val decodeLocation = permissionViewModel.decodeLocation(context,userLocation)
+    val decodeLocation = permissionViewModel.decodeLocation(context, userLocation)
+    var productNearYou by remember { mutableStateOf<List<FarmerProduct>>(emptyList()) }
+    val cartItems by cartViewModel.allProducts.collectAsState(initial = emptyList())
 
 
     LaunchedEffect(Unit) {
@@ -84,6 +87,12 @@ fun FarmerProductScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
         viewModel.fetchFarmerProducts()
         viewModel.checkForDeals()
+        val nearYou = client.postgrest["farmproducts"].select() {
+            filter {
+                eq("location", decodeLocation)
+            }
+        }.decodeList<FarmerProduct>()
+        productNearYou = nearYou
     }
 
     Scaffold(
@@ -91,7 +100,12 @@ fun FarmerProductScreen(navController: NavHostController) {
             when (userProfileState) {
                 is UserProfileState.Success -> {
                     TopAppBar(
-                        title = { Text(userProfileState.name,color = MaterialTheme.colorScheme.secondary) },
+                        title = {
+                            Text(
+                                userProfileState.name,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        },
                         navigationIcon = {
                             AsyncImage(
                                 model = profileImage,
@@ -106,16 +120,19 @@ fun FarmerProductScreen(navController: NavHostController) {
                         actions = {
                             Row {
                                 IconButton(
-                                    onClick = {},
+                                    onClick = { navController.navigate("cartScreen") },
                                 ) {
-                                    Icon(Icons.Default.ShoppingBasket, contentDescription = "Shopping cart", tint = MaterialTheme.colorScheme.secondary)
+                                    Icon(
+                                        Icons.Default.ShoppingBasket,
+                                        contentDescription = "Shopping cart",
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
                                 }
-                                Text("$noItems", color = MaterialTheme.colorScheme.secondary)
+                                Text("${cartItems.size}", color = MaterialTheme.colorScheme.secondary)
                             }
                         }
                     )
                 }
-
                 is UserProfileState.Error -> TODO()
                 UserProfileState.Loading -> TODO()
             }
@@ -153,7 +170,7 @@ fun FarmerProductScreen(navController: NavHostController) {
                     trailingIcon = {
                         IconButton(onClick = {
                             viewModel.searchProducts(searchValue)
-                            searchValue =""
+                            searchValue = ""
                         }) {
                             Icon(
                                 Icons.Default.Search,
@@ -216,9 +233,9 @@ fun FarmerProductScreen(navController: NavHostController) {
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                             ) {
                                 items(farmerProducts.take(10).reversed()) { product ->
-                                    ColumnProductItem(product = product,
-                                        onAddToBucket = {noItems++},
-                                        onRemoveFromBucket = {noItems--},
+                                    ColumnProductItem(
+                                        product = product,
+                                        cartViewModel = cartViewModel,
                                         onClickListener = {
                                             navController.navigate("productDetail/${product.productId}")
                                         }
@@ -241,8 +258,9 @@ fun FarmerProductScreen(navController: NavHostController) {
                         reverseLayout = true
                     ) {
                         items(farmProductsOnDeal) { product ->
-                            ColumnProductItem(product = product, onAddToBucket = {noItems++},
-                                onRemoveFromBucket = {noItems--},
+                            ColumnProductItem(
+                                product = product,
+                                cartViewModel = cartViewModel,
                                 onClickListener = {
                                     navController.navigate("productDetail/${product.productId}")
                                 }
@@ -250,7 +268,8 @@ fun FarmerProductScreen(navController: NavHostController) {
                         }
                     }
 
-                    Text(text = "Near You",
+                    Text(
+                        text = "Near You",
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 8.dp)
@@ -262,10 +281,10 @@ fun FarmerProductScreen(navController: NavHostController) {
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         reverseLayout = true
                     ) {
-                        items(productsNearYou) { product ->
-                            ColumnProductItem(product = product,
-                                onAddToBucket = {noItems++},
-                                onRemoveFromBucket = {noItems--},
+                        items(productNearYou) { product ->
+                            ColumnProductItem(
+                                product = product,
+                                cartViewModel = cartViewModel,
                                 onClickListener = {
                                     navController.navigate("productDetail/${product.productId}")
                                 }
@@ -279,17 +298,26 @@ fun FarmerProductScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ColumnProductItem(product: FarmerProduct, onClickListener: () -> Unit = {},onAddToBucket: () -> Unit = {},onRemoveFromBucket: () -> Unit = {}) {
+fun ColumnProductItem(
+    product: FarmerProduct,
+    cartViewModel: CartProductViewModel,
+    onClickListener: () -> Unit = {},
+) {
     var liked by remember { mutableStateOf(false) }
-    var isAddedToBucket by remember { mutableStateOf(false) }
+    val cartItems by cartViewModel.allProducts.collectAsState(initial = emptyList())
+    val isAddedToBucket by remember {
+        derivedStateOf { cartItems.any { it.productId == product.productId } }
+    }
+
     Card(
-        modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(Color.White),
-        onClick = {onClickListener()}
+        onClick = { onClickListener() }
     ) {
-
         var productImages by remember { mutableStateOf<ByteArray?>(null) }
         LaunchedEffect(Unit) {
             val bucketName = "product-images"
@@ -330,13 +358,15 @@ fun ColumnProductItem(product: FarmerProduct, onClickListener: () -> Unit = {},o
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
-            Text(text = "Stock: ${product.stockQuantity}",
+            Text(
+                text = "Stock: ${product.stockQuantity}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
-            Row(Modifier.align(Alignment.End),
-                horizontalArrangement = Arrangement.SpaceBetween){
-
+            Row(
+                Modifier.align(Alignment.End),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 IconButton(
                     onClick = {
                         liked = !liked
@@ -350,15 +380,27 @@ fun ColumnProductItem(product: FarmerProduct, onClickListener: () -> Unit = {},o
                 }
                 IconButton(
                     onClick = {
-                        isAddedToBucket = !isAddedToBucket
-                        if (isAddedToBucket){
-                            onAddToBucket()
-                        }else{
-                            onRemoveFromBucket()
+                        if (isAddedToBucket) {
+                            cartViewModel.deleteProduct(product.productId.toInt())
+                        } else {
+                            cartViewModel.insertProduct(
+                                CartProduct(
+                                    productId = product.productId,
+                                    name = product.name,
+                                    description = product.description,
+                                    category = product.category,
+                                    pricePerUnit = product.pricePerUnit,
+                                    unit = product.unit,
+                                    stockQuantity = product.stockQuantity,
+                                    location = product.location,
+                                    imageUrl = product.imageUrl,
+                                )
+                            )
                         }
                     }
-                ){
-                    Icon(Icons.Default.ShoppingBag,
+                ) {
+                    Icon(
+                        Icons.Default.ShoppingBag,
                         contentDescription = "Add to Bucket",
                         tint = if (isAddedToBucket) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
@@ -367,7 +409,6 @@ fun ColumnProductItem(product: FarmerProduct, onClickListener: () -> Unit = {},o
         }
     }
 }
-
 
 @Composable
 fun CategoryItem(category: CategoryItem) {

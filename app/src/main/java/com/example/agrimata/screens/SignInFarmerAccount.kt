@@ -209,13 +209,11 @@ fun SignInFarmerAccount(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        if (userState is UserState.Error) {
                                             Toast.makeText(
                                                 context,
                                                 "Sign In Failed",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                        }
                                     }
                                 } else {
                                     Toast.makeText(
