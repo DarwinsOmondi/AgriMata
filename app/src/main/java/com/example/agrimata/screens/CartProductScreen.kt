@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
@@ -70,13 +71,27 @@ fun CartProductScreen(navHostController: NavHostController,cartViewModel: CartPr
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
+                actions = {
+                    IconButton(
+                        onClick = {
+                            cartViewModel.deleteAllProducts()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = "Clear Cart",
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
             )
         }
     ){innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp)) {
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
             LazyColumn {
                 items(cartItems){ item ->
                     CardProductView(product = item, cartViewModel = cartViewModel)

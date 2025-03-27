@@ -55,7 +55,7 @@ import io.github.jan.supabase.storage.storage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FarmerProductScreen(navController: NavHostController,cartViewModel: CartProductViewModel) {
+fun FarmerProductScreen(navController: NavHostController, cartViewModel: CartProductViewModel) {
     val context = LocalContext.current
     val profileViewModel: ProfileViewModel = viewModel()
     val permissionViewModel: PermissionViewModel = viewModel()
@@ -128,11 +128,15 @@ fun FarmerProductScreen(navController: NavHostController,cartViewModel: CartProd
                                         tint = MaterialTheme.colorScheme.secondary
                                     )
                                 }
-                                Text("${cartItems.size}", color = MaterialTheme.colorScheme.secondary)
+                                Text(
+                                    "${cartItems.size}",
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
                             }
                         }
                     )
                 }
+
                 is UserProfileState.Error -> TODO()
                 UserProfileState.Loading -> TODO()
             }
@@ -200,14 +204,6 @@ fun FarmerProductScreen(navController: NavHostController,cartViewModel: CartProd
                     }
 
                     Spacer(Modifier.height(16.dp))
-                    Text(
-                        "New To Market",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-
-                    Spacer(Modifier.height(16.dp))
                     when {
                         loadingState -> {
                             Box(
@@ -228,11 +224,20 @@ fun FarmerProductScreen(navController: NavHostController,cartViewModel: CartProd
                         }
 
                         else -> {
+                            Text(
+                                "New To Market",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+
+                            Spacer(Modifier.height(16.dp))
                             LazyRow(
                                 modifier = Modifier.padding(horizontal = 8.dp),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                reverseLayout = true
                             ) {
-                                items(farmerProducts.take(10).reversed()) { product ->
+                                items(farmerProducts.take(10)) { product ->
                                     ColumnProductItem(
                                         product = product,
                                         cartViewModel = cartViewModel,
@@ -242,53 +247,53 @@ fun FarmerProductScreen(navController: NavHostController,cartViewModel: CartProd
                                     )
                                 }
                             }
-                        }
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        "Deals", style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-                    Spacer(Modifier.height(16.dp))
-
-                    LazyRow(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        reverseLayout = true
-                    ) {
-                        items(farmProductsOnDeal) { product ->
-                            ColumnProductItem(
-                                product = product,
-                                cartViewModel = cartViewModel,
-                                onClickListener = {
-                                    navController.navigate("productDetail/${product.productId}")
-                                }
+                            Spacer(Modifier.height(16.dp))
+                            Text(
+                                "Deals", style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             )
-                        }
-                    }
+                            Spacer(Modifier.height(16.dp))
 
-                    Text(
-                        text = "Near You",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-                    Spacer(Modifier.height(16.dp))
-
-                    LazyRow(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        reverseLayout = true
-                    ) {
-                        items(productNearYou) { product ->
-                            ColumnProductItem(
-                                product = product,
-                                cartViewModel = cartViewModel,
-                                onClickListener = {
-                                    navController.navigate("productDetail/${product.productId}")
+                            LazyRow(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                reverseLayout = true
+                            ) {
+                                items(farmProductsOnDeal) { product ->
+                                    ColumnProductItem(
+                                        product = product,
+                                        cartViewModel = cartViewModel,
+                                        onClickListener = {
+                                            navController.navigate("productDetail/${product.productId}")
+                                        }
+                                    )
                                 }
+                            }
+
+                            Text(
+                                text = "Near You",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             )
+                            Spacer(Modifier.height(16.dp))
+
+                            LazyRow(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                reverseLayout = true
+                            ) {
+                                items(productNearYou) { product ->
+                                    ColumnProductItem(
+                                        product = product,
+                                        cartViewModel = cartViewModel,
+                                        onClickListener = {
+                                            navController.navigate("productDetail/${product.productId}")
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 }

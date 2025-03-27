@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.agrimata.components.UserBottomNavigationBarUi
 import com.example.agrimata.model.Message
 import com.example.agrimata.model.UserState
 import com.example.agrimata.network.SuparBaseClient.client
@@ -21,10 +24,12 @@ import com.example.agrimata.viewmodels.ChatViewModel
 import com.example.agrimata.viewmodels.AgriMataClientAuth
 import io.github.jan.supabase.auth.auth
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     chatViewModel: ChatViewModel = viewModel(),
-    authViewModel: AgriMataClientAuth = viewModel()
+    authViewModel: AgriMataClientAuth = viewModel(),
+    navController: NavHostController
 ) {
     val messages by chatViewModel.messages.collectAsState()
     val userState by authViewModel.userState
@@ -47,7 +52,18 @@ fun ChatScreen(
         }
     }
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Chat", color = textColor) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
+            )
+        },
+        bottomBar = {
+            UserBottomNavigationBarUi(navController)
+        },
+
+    ){ innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

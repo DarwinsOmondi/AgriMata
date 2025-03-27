@@ -58,13 +58,14 @@ class MainActivity : ComponentActivity() {
     private val cartViewModel: CartProductViewModel by viewModels {
         CartProductViewModelFactory(application)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AgriMataTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AgriMata(modifier = Modifier.padding(innerPadding),cartViewModel)
+                    AgriMata(modifier = Modifier.padding(innerPadding), cartViewModel)
                 }
             }
         }
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AgriMata(modifier: Modifier = Modifier,cartViewModel: CartProductViewModel) {
+fun AgriMata(modifier: Modifier = Modifier, cartViewModel: CartProductViewModel) {
     val navController = rememberNavController()
     val authViewModel: AgriMataClientAuth = viewModel()
     val farmerauthViewModel: FarmersAuthViewModel = viewModel()
@@ -151,10 +152,10 @@ fun AgriMata(modifier: Modifier = Modifier,cartViewModel: CartProductViewModel) 
             )
         }
         composable("message") {
-            ChatScreen()
+            ChatScreen(navController = navController)
         }
         composable("market") {
-            FarmerProductScreen(navController,cartViewModel)
+            FarmerProductScreen(navController, cartViewModel)
         }
         composable("activity") {
             AddProductScreen(navController)
@@ -165,8 +166,8 @@ fun AgriMata(modifier: Modifier = Modifier,cartViewModel: CartProductViewModel) 
         composable("productDetail/{productId}") {
             ProductDetailScreen(navController)
         }
-        composable("cartScreen"){
-            CartProductScreen(navController,cartViewModel)
+        composable("cartScreen") {
+            CartProductScreen(navController, cartViewModel)
         }
     }
 }

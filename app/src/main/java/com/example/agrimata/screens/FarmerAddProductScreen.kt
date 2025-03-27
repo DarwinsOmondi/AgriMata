@@ -357,5 +357,6 @@ val listOfUnites = listOf<String>(
     "Bags",
     "Packs",
     "Bunch",
-    "tray"
+    "tray",
+    "Animal"
 )
