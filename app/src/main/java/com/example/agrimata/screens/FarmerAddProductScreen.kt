@@ -37,10 +37,12 @@ import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
 import com.example.agrimata.viewmodels.ProfileViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductScreen(navcontroller: NavHostController) {
+    val scope = rememberCoroutineScope()
     val viewModel: FarmerProductViewModel = viewModel()
     val permissionViewModel: PermissionViewModel = viewModel()
     val context = LocalContext.current
@@ -55,7 +57,7 @@ fun AddProductScreen(navcontroller: NavHostController) {
     var userLocation by remember { mutableStateOf<Location?>(null) }
     val authViewModel: FarmersAuthViewModel = viewModel()
     val profileImage = authViewModel.profileImage.value
-
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var categoryDropDownExpanded by remember { mutableStateOf(false) }
     var unitDropDownExpanded by remember { mutableStateOf(false) }
@@ -301,28 +303,30 @@ fun AddProductScreen(navcontroller: NavHostController) {
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Submit Button
             Button(
                 onClick = {
-                    if (productName.isNotEmpty() && productDescription.isNotEmpty() && productPrice.isNotEmpty() && productCategory.isNotEmpty() && productUnit.isNotEmpty() && productStock.isNotEmpty() && productLocation.isNotEmpty() && selectedImageUri != null) {
-                        val product = FarmerProduct(
-                            productId = "",
-                            name = productName,
-                            description = productDescription,
-                            category = productCategory,
-                            pricePerUnit = productPrice.toDoubleOrNull() ?: 0.0,
-                            unit = productUnit,
-                            stockQuantity = productStock.toIntOrNull() ?: 0,
-                            location = productLocation.toString(),
-                            imageUrl = "",
-                        )
-                        viewModel.addFarmerProduct(context, product, selectedImageUri!!)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Please fill all fields and select an image",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    scope.launch {
+                        if (productName.isNotEmpty() && productDescription.isNotEmpty() && productPrice.isNotEmpty() && productCategory.isNotEmpty() && productUnit.isNotEmpty() && productStock.isNotEmpty() && productLocation.isNotEmpty() && selectedImageUri != null) {
+                            val product = FarmerProduct(
+                                productId = "",
+                                name = productName,
+                                description = productDescription,
+                                category = productCategory,
+                                pricePerUnit = productPrice.toDoubleOrNull() ?: 0.0,
+                                unit = productUnit,
+                                stockQuantity = productStock.toIntOrNull() ?: 0,
+                                location = productLocation.toString(),
+                                imageUrl = "",
+                            )
+                            viewModel.addFarmerProduct(context, product, selectedImageUri!!)
+                            snackbarHostState.showSnackbar("Product Added Successfully")
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Please fill all fields and select an image",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

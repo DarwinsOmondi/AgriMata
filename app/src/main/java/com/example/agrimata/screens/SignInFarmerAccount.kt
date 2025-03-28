@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -67,7 +68,7 @@ fun SignInFarmerAccount(
     var error by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var togglePasswordVisibility by remember { mutableStateOf(false) }
-
+    val snackbarHostState = remember { SnackbarHostState() }
     // Use MaterialTheme color scheme
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
@@ -203,17 +204,13 @@ fun SignInFarmerAccount(
                                     authViewModel.signInFarmer(email, password)
                                     if (userState is UserState.Success) {
                                         onSignInSuccess()
+                                        snackbarHostState.showSnackbar("Sign In Successful")
+                                    } else {
                                         Toast.makeText(
                                             context,
-                                            "Sign In Successful",
+                                            "Sign In Failed",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                    } else {
-                                            Toast.makeText(
-                                                context,
-                                                "Sign In Failed",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
                                     }
                                 } else {
                                     Toast.makeText(
