@@ -76,6 +76,7 @@ fun FarmerProductScreen(navController: NavHostController, cartViewModel: CartPro
     val cartItems by cartViewModel.allProducts.collectAsState(initial = emptyList())
 
 
+
     LaunchedEffect(Unit) {
         permissionViewModel.getUserLocation(context) { location ->
             userLocation = location
@@ -260,12 +261,12 @@ fun FarmerProductScreen(navController: NavHostController, cartViewModel: CartPro
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 reverseLayout = true
                             ) {
-                                items(farmProductsOnDeal) { product ->
+                                items(farmProductsOnDeal) { deals ->
                                     ColumnProductItem(
-                                        product = product,
+                                        product = deals,
                                         cartViewModel = cartViewModel,
                                         onClickListener = {
-                                            navController.navigate("productDetail/${product.productId}")
+                                            navController.navigate("productDetail/${deals.productId}")
                                         }
                                     )
                                 }
@@ -308,7 +309,6 @@ fun ColumnProductItem(
     cartViewModel: CartProductViewModel,
     onClickListener: () -> Unit = {},
 ) {
-    var liked by remember { mutableStateOf(false) }
     val cartItems by cartViewModel.allProducts.collectAsState(initial = emptyList())
     val isAddedToBucket by remember {
         derivedStateOf { cartItems.any { it.productId == product.productId } }
@@ -374,19 +374,8 @@ fun ColumnProductItem(
             ) {
                 IconButton(
                     onClick = {
-                        liked = !liked
-                    },
-                ) {
-                    Icon(
-                        imageVector = if (liked) Icons.Default.Star else Icons.Default.StarOutline,
-                        contentDescription = "Like",
-                        tint = if (liked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                    )
-                }
-                IconButton(
-                    onClick = {
                         if (isAddedToBucket) {
-                            cartViewModel.deleteProduct(product.productId.toInt())
+                            cartViewModel.deleteProduct(product.productId)
                         } else {
                             cartViewModel.insertProduct(
                                 CartProduct(

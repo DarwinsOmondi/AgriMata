@@ -9,7 +9,7 @@ class CartProductRepository(private val cartProductDao: CartProductDao) {
         cartProductDao.insertProduct(product)
     }
 
-    suspend fun deleteProduct(productId: Int) {
+    suspend fun deleteProduct(productId: String) {
         cartProductDao.deleteProduct(productId)
     }
 

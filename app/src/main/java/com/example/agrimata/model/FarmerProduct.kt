@@ -13,5 +13,6 @@ data class FarmerProduct(
     val stockQuantity: Int = 0,
     val location: String = "",
     val imageUrl: String = "",
+    val farmerPhoneNumber: String = "",
     val isAvailable: Boolean = true,
 )

@@ -1,37 +1,38 @@
 package com.example.agrimata.screens
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Pix
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -48,7 +49,20 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(navController: NavHostController) {
+    var productImages by remember { mutableStateOf<ByteArray?>(null) }
+    var productUnit by remember { mutableStateOf("") }
+    var productPrice by remember { mutableDoubleStateOf(0.0) }
+    var totalPrice by remember { mutableDoubleStateOf(0.0) }
+    val gradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primary,
+            Color.White
+        ),
+        startY = 0f,
+        endY = 500f
+    )
     val marketViewModel: FarmerProductViewModel = viewModel()
+    val cartItemTally = marketViewModel.cartItem.collectAsState()
     val productId = navController.currentBackStackEntry?.arguments?.getString("productId")
 
     var product by remember { mutableStateOf<FarmerProduct?>(null) }
@@ -73,8 +87,7 @@ fun ProductDetailScreen(navController: NavHostController) {
 
     Scaffold(
         Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.secondary),
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -89,160 +102,144 @@ fun ProductDetailScreen(navController: NavHostController) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary),
+                actions = {
+                    Row {
+                        IconButton(
+                            onClick = {
+                                marketViewModel.incrementCartItem()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Add",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                        Text(
+                            if (cartItemTally.value <= 0) "1" else "${cartItemTally.value}",
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        IconButton(
+                            onClick = {
+                                marketViewModel.decrementCartItem()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Remove,
+                                contentDescription = "Add",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+                }
             )
         }
     ) { innerPadding ->
         Column(
             Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .background(gradient)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             product?.let {
-                DetailItem(it)
+                LaunchedEffect(Unit) {
+                    val bucketName = "product-images"
+                    val bucket = client.storage[bucketName]
+                    val productImage = bucket.downloadAuthenticated(it.imageUrl)
+                    productImages = productImage
+                }
+                Text(
+                    it.name, style = MaterialTheme.typography.displaySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(Modifier.height(16.dp))
+                if (productImages != null) {
+                    AsyncImage(
+                        model = productImages,
+                        contentDescription = "Product Image",
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .size(250.dp)
+                            .clip(CircleShape),
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                productPrice = it.pricePerUnit
+                productUnit = it.unit
+                Spacer(Modifier.weight(.5f))
+                Column(
+                    Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    DetailView(Icons.Default.Category, it.category)
+                    DetailView(Icons.Default.Description, it.description)
+                    DetailView(Icons.Default.Pix, it.unit)
+                    DetailView(Icons.Default.LocationOn, it.location)
+
+
+                }
             } ?: CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(16.dp)
                     .size(150.dp)
             )
+            Spacer(Modifier.weight(.5f))
 
-            Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = {},
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(50.dp),
+            ) {
+                totalPrice = if (cartItemTally.value <= 0) {
+                    productPrice * 1
+                } else {
+                    productPrice * cartItemTally.value
+                }
+                Text(
+                    if (totalPrice == productPrice) "Purchase :$productPrice / $productUnit" else "Purchase :$totalPrice / $productUnit",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }
 
-
 @Composable
-fun DetailItem(farmerProduct: FarmerProduct) {
-    var productImages by remember { mutableStateOf<ByteArray?>(null) }
-    LaunchedEffect(Unit) {
-        val bucketName = "product-images"
-        val bucket = client.storage[bucketName]
-        val productImage = bucket.downloadAuthenticated(farmerProduct.imageUrl)
-        productImages = productImage
-    }
-
-    Column(Modifier.fillMaxSize()) {
-        Box(
-            Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Card(
-                Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter),
-                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(0.dp)
-            ) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = farmerProduct.name,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    Spacer(Modifier.height(32.dp))
-                }
-            }
-            if (productImages != null) {
-                AsyncImage(
-                    model = productImages,
-                    contentDescription = "Product Image",
-                    modifier = Modifier
-                        .size(250.dp)
-                        .clip(CircleShape)
-                        .align(Alignment.BottomCenter),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
-
-        Spacer(Modifier.height(75.dp))
-
-        Card(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background)
-        ) {
-            Column(Modifier.padding(16.dp)) {
-                Text(
-                    text = "Description:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = farmerProduct.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "Price:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = farmerProduct.pricePerUnit.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "Category:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    farmerProduct.category,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "Unit:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    farmerProduct.unit,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "Stock Quantity:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    farmerProduct.stockQuantity.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "Location:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = farmerProduct.location,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
+fun DetailView(
+    icon: ImageVector,
+    title: String,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = "$title Icon", tint = MaterialTheme.colorScheme.secondary)
+        Spacer(Modifier.width(8.dp))
+        Column {
+            Text(
+                title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(Modifier.height(4.dp))
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductDetailScreenPreview() {
+    ProductDetailScreen(navController = NavHostController(LocalContext.current))
 }

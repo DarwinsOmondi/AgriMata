@@ -58,7 +58,7 @@ import io.github.jan.supabase.storage.storage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartProductScreen(navHostController: NavHostController,cartViewModel: CartProductViewModel){
+fun CartProductScreen(navController: NavHostController, cartViewModel: CartProductViewModel) {
     val cartItems by cartViewModel.allProducts.collectAsState(initial = emptyList())
 
     Scaffold(
@@ -66,8 +66,12 @@ fun CartProductScreen(navHostController: NavHostController,cartViewModel: CartPr
             TopAppBar(
                 title = { Text("Cart", color = MaterialTheme.colorScheme.secondary) },
                 navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back", tint = MaterialTheme.colorScheme.secondary)
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.Default.ArrowBackIosNew,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -86,15 +90,20 @@ fun CartProductScreen(navHostController: NavHostController,cartViewModel: CartPr
                 }
             )
         }
-    ){innerPadding ->
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             LazyColumn {
-                items(cartItems){ item ->
-                    CardProductView(product = item, cartViewModel = cartViewModel)
+                items(cartItems) { item ->
+                    CardProductView(
+                        product = item,
+                        cartViewModel = cartViewModel,
+                        onClickListener = { navController.navigate("productDetail/${item.productId}") })
                 }
             }
         }
@@ -107,7 +116,6 @@ fun CardProductView(
     cartViewModel: CartProductViewModel,
     onClickListener: () -> Unit = {},
 ) {
-    var liked by remember { mutableStateOf(false) }
     val cartItems by cartViewModel.allProducts.collectAsState(initial = emptyList())
     val isAddedToBucket by remember {
         derivedStateOf { cartItems.any { it.productId == product.productId } }
@@ -116,7 +124,7 @@ fun CardProductView(
     Card(
         modifier = Modifier
             .padding(vertical = 8.dp)
-            .wrapContentSize(),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(Color.White),
@@ -139,7 +147,6 @@ fun CardProductView(
                     .build(),
                 contentDescription = "${product.name} Image",
                 modifier = Modifier
-                    .size(150.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
                     .align(Alignment.CenterHorizontally),
@@ -159,12 +166,12 @@ fun CardProductView(
 
             Text(
                 text = "Price: $${product.pricePerUnit} / ${product.unit}",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
             Text(
-                text = "Stock: ${product.stockQuantity}",
-                style = MaterialTheme.typography.bodyMedium,
+                text = "Description: ${product.description}",
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
             Row(
@@ -173,19 +180,8 @@ fun CardProductView(
             ) {
                 IconButton(
                     onClick = {
-                        liked = !liked
-                    },
-                ) {
-                    Icon(
-                        imageVector = if (liked) Icons.Default.Star else Icons.Default.StarOutline,
-                        contentDescription = "Like",
-                        tint = if (liked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                    )
-                }
-                IconButton(
-                    onClick = {
                         if (isAddedToBucket) {
-                            cartViewModel.deleteProduct(product.productId.toInt())
+                            cartViewModel.deleteProduct(product.productId)
                         } else {
                             cartViewModel.insertProduct(
                                 CartProduct(

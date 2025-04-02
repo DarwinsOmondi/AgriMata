@@ -12,7 +12,7 @@ private val LightColorScheme = lightColorScheme(
     background = White80,   // White background
     surface = White80,
     onPrimary = White80,    // Text on primary button
-    onSecondary = White80,
+    onSecondary = BlackGrey80,
     onBackground = BlackGrey80,  // Text on white background
     onSurface = BlackGrey80
 )

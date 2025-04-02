@@ -41,6 +41,9 @@ class FarmerProductViewModel : ViewModel() {
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
 
+    private val _cartItems = MutableStateFlow<Int>(0)
+    val cartItem: StateFlow<Int> = _cartItems
+
 
     init {
         fetchFarmerProducts()
@@ -251,20 +254,9 @@ class FarmerProductViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val products = client.postgrest["farmproducts"]
-                    .select(
-                        columns = Columns.list(
-                            "id",
-                            "name",
-                            "category",
-                            "pricePerUnit",
-                            "imageUrl",
-                            "unit",
-                            "stockQuantity"
-                        )
-                    )
+                    .select()
                     .decodeList<FarmerProduct>()
-
-                val cheapestProducts = products
+                var cheapestProducts = products
                     .groupBy { it.category }
                     .mapNotNull { (_, productsInCategory) ->
                         productsInCategory.minByOrNull { it.pricePerUnit }
@@ -275,6 +267,15 @@ class FarmerProductViewModel : ViewModel() {
             } catch (e: Exception) {
                 println("Error fetching deals: ${e.message}")
             }
+        }
+    }
+    fun incrementCartItem(){
+            _cartItems.value++
+    }
+
+    fun decrementCartItem(){
+        if (_cartItems.value > 0) {
+            _cartItems.value--
         }
     }
 }

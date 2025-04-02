@@ -1,5 +1,6 @@
 package com.example.agrimata
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,7 +55,6 @@ import com.example.agrimata.viewmodels.CartProductViewModel
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import io.github.jan.supabase.auth.auth
 
-
 class MainActivity : ComponentActivity() {
     private val cartViewModel: CartProductViewModel by viewModels {
         CartProductViewModelFactory(application)
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AgriMataTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AgriMata(modifier = Modifier.padding(innerPadding), cartViewModel)
+                    AgriMata(modifier = Modifier.padding(innerPadding), cartViewModel, this)
                 }
             }
         }
@@ -73,10 +74,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AgriMata(modifier: Modifier = Modifier, cartViewModel: CartProductViewModel) {
+fun AgriMata(modifier: Modifier = Modifier, cartViewModel: CartProductViewModel, context: Context) {
     val navController = rememberNavController()
     val authViewModel: AgriMataClientAuth = viewModel()
     val farmerauthViewModel: FarmersAuthViewModel = viewModel()
+    val isUserLoggedIn = remember { mutableStateOf(getUserLoggedInStates(context)) }
 
     val userState by authViewModel.userState
     val isFarmer by farmerauthViewModel.isFarmer
@@ -88,9 +90,16 @@ fun AgriMata(modifier: Modifier = Modifier, cartViewModel: CartProductViewModel)
     val user = client.auth.currentSessionOrNull()?.user
     val role = user?.role
 
+    if (userState is UserState.Success) {
+        isUserLoggedIn.value = true
+        saveUserLoggedInStates(context, isUserLoggedIn.value)
+    } else {
+        isUserLoggedIn.value = false
+        saveUserLoggedInStates(context, isUserLoggedIn.value)
+    }
 
     val startDestination = if (userState is UserState.Success) {
-        if (role == "farmer") "farmeraccount" else "market"
+        "market"
     } else {
         "signin"
     }
@@ -273,4 +282,14 @@ fun ProductCard(product: FarmerProduct) {
             }
         }
     }
+}
+
+fun saveUserLoggedInStates(context: Context, isLoggedIn: Boolean) {
+    val sharedPreferences = context.getSharedPreferences("UrbanGo", Context.MODE_PRIVATE)
+    sharedPreferences.edit() { putBoolean("isLoggedIn", isLoggedIn) }
+}
+
+fun getUserLoggedInStates(context: Context): Boolean {
+    val sharedPreferences = context.getSharedPreferences("UrbanGo", Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean("isLoggedIn", false)
 }

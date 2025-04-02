@@ -60,7 +60,7 @@ class FarmersAuthViewModel() : ViewModel() {
                     password = userPassword
                     data = buildJsonObject {
                         put("name", JsonPrimitive(userName))
-                        if (!userPhone.isNullOrBlank()) put("phone", JsonPrimitive(userPhone))
+                        if (!userPhone.isNullOrBlank()) put("phone", JsonPrimitive(userPhone.toLong()))
                         put("role", JsonPrimitive(role))
                         if (!role.isNullOrBlank()) put("role", JsonPrimitive(role))
                     }
@@ -180,7 +180,7 @@ class FarmersAuthViewModel() : ViewModel() {
                     data = buildJsonObject {
                         put("name", JsonPrimitive(name))
                         put("email", JsonPrimitive(email))
-                        put("phone", JsonPrimitive(phone))
+                        put("phone", JsonPrimitive(phone.toInt()))
                     }
                 }
                 _userState.value = UserState.Success("User details updated successfully")

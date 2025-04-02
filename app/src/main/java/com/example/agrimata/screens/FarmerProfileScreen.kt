@@ -159,9 +159,9 @@ fun FarmerProfileScreen(navController: NavHostController) {
                             )
                         }
                         FarmerProfileInfo(
-                            name = farmerProfileState.name,
+                            name = farmerProfileState.name.trim('"'),
                             email = farmerProfileState.email,
-                            phone = farmerProfileState.phone,
+                            phone = farmerProfileState.phone.trim('"'),
                             imageUrl = profileImage.toString(),
                             farmerLocation = farmerLocation,
                             permissionViewModel = premissonViewModel,

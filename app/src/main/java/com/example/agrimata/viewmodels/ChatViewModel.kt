@@ -16,7 +16,6 @@ class ChatViewModel : ViewModel() {
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
     init {
-        // Fetch messages when ViewModel initializes
         viewModelScope.launch { fetchMessages() }
     }
 

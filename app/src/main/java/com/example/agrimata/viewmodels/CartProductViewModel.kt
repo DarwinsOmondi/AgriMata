@@ -23,7 +23,7 @@ class CartProductViewModel(application: Application) : AndroidViewModel(applicat
         cartProductRepository.insertProduct(product)
     }
 
-    fun deleteProduct(productId: Int) = viewModelScope.launch {
+    fun deleteProduct(productId: String) = viewModelScope.launch {
         cartProductRepository.deleteProduct(productId)
     }
 

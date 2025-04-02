@@ -33,6 +33,7 @@ import com.example.agrimata.R
 import com.example.agrimata.components.FarmerBottomNavigationBarUi
 import com.example.agrimata.components.UserBottomNavigationBarUi
 import com.example.agrimata.model.FarmerProduct
+import com.example.agrimata.model.UserProfileState
 import com.example.agrimata.viewmodels.FarmerProductViewModel
 import com.example.agrimata.viewmodels.FarmersAuthViewModel
 import com.example.agrimata.viewmodels.PermissionViewModel
@@ -45,6 +46,8 @@ fun AddProductScreen(navcontroller: NavHostController) {
     val scope = rememberCoroutineScope()
     val viewModel: FarmerProductViewModel = viewModel()
     val permissionViewModel: PermissionViewModel = viewModel()
+    val profileViewModel: ProfileViewModel = viewModel()
+    val farmerProfileState = profileViewModel.userProfileState.value
     val context = LocalContext.current
     var productName by remember { mutableStateOf("") }
     var productDescription by remember { mutableStateOf("") }
@@ -58,6 +61,7 @@ fun AddProductScreen(navcontroller: NavHostController) {
     val authViewModel: FarmersAuthViewModel = viewModel()
     val profileImage = authViewModel.profileImage.value
     val snackbarHostState = remember { SnackbarHostState() }
+    var farmerPhoneNumber by remember { mutableStateOf("") }
 
     var categoryDropDownExpanded by remember { mutableStateOf(false) }
     var unitDropDownExpanded by remember { mutableStateOf(false) }
@@ -123,7 +127,13 @@ fun AddProductScreen(navcontroller: NavHostController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            when (farmerProfileState) {
+                is UserProfileState.Loading -> {}
+                is UserProfileState.Error -> {}
+                is UserProfileState.Success -> {
+                    farmerPhoneNumber = farmerProfileState.phone.trim('"')
+                }
+            }
             // Text Fields
             OutlinedTextField(
                 value = productName,
@@ -317,6 +327,7 @@ fun AddProductScreen(navcontroller: NavHostController) {
                                 stockQuantity = productStock.toIntOrNull() ?: 0,
                                 location = productLocation.toString(),
                                 imageUrl = "",
+                                farmerPhoneNumber = farmerPhoneNumber
                             )
                             viewModel.addFarmerProduct(context, product, selectedImageUri!!)
                             snackbarHostState.showSnackbar("Product Added Successfully")

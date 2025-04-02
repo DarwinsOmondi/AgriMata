@@ -83,11 +83,7 @@ fun UserBottomNavigationBarUi(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .wrapContentSize()
-            .offset(y = (0).dp)
-            .padding(horizontal = 12.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .fillMaxWidth()
             .background(colorScheme.primary),
         contentAlignment = Alignment.Center
     )
@@ -136,11 +132,7 @@ fun FarmerBottomNavigationBarUi(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .wrapContentSize()
-            .offset(y = (0).dp)
-            .padding(horizontal = 12.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .fillMaxWidth()
             .background(colorScheme.primary),
         contentAlignment = Alignment.Center
     )

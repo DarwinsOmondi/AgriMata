@@ -54,10 +54,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun FarmerEditProfileScreen(onBack: () -> Unit) {
 
-    // Use MaterialTheme color scheme
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
-    val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.secondary
 
     val viewModel: FarmersAuthViewModel = viewModel()
@@ -152,9 +148,9 @@ fun FarmerEditProfileScreen(onBack: () -> Unit) {
         Spacer(modifier = Modifier.weight(.5f))
         LaunchedEffect(userProfileState) {
             if (userProfileState is UserProfileState.Success) {
-                userName = userProfileState.name
+                userName = userProfileState.name.trim('"')
                 userEmail = userProfileState.email
-                userPhone = userProfileState.phone
+                userPhone = userProfileState.phone.trim('"')
             }
         }
 
@@ -196,7 +192,7 @@ fun FarmerEditProfileScreen(onBack: () -> Unit) {
         Column {
             Text("Phone", color = textColor, modifier = Modifier.align(Alignment.Start))
             OutlinedTextField(
-                value = userPhone,
+                value = "0$userPhone",
                 onValueChange = { userPhone = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),

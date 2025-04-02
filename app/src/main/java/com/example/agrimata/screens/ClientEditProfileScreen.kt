@@ -132,7 +132,7 @@ fun ClientEditProfileScreen(onBack: () -> Unit) {
         Column {
             Text("Name", color = textColor, modifier = Modifier.align(Alignment.Start))
             OutlinedTextField(
-                value = userName,
+                value = userName.trim('"'),
                 onValueChange = { userName = it },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -167,7 +167,7 @@ fun ClientEditProfileScreen(onBack: () -> Unit) {
         Column {
             Text("Phone", color = textColor, modifier = Modifier.align(Alignment.Start))
             OutlinedTextField(
-                value = userPhone,
+                value = "0$userPhone",
                 onValueChange = { userPhone = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),

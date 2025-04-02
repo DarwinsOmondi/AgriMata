@@ -158,9 +158,9 @@ fun ClientProfileScreen(
                             )
                         }
                         ProfileInfo(
-                            name = userProfileState.name,
+                            name = userProfileState.name.trim('"'),
                             email = userProfileState.email,
-                            phone = userProfileState.phone,
+                            phone = "0${userProfileState.phone}",
                             imageUrl = userProfileState.imageUrl,
                             userLocation,
                             permissionViewModel,

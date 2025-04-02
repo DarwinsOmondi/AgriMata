@@ -98,7 +98,9 @@ fun ProductCategoryScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         items(products) { product ->
-                            ColumnProductItemCategory(product, onClickListener = {})
+                            ColumnProductItemCategory(
+                                product,
+                                onClickListener = { navController.navigate("productDetail/${product.productId}") })
                         }
                     }
                 }
@@ -109,7 +111,10 @@ fun ProductCategoryScreen(
 
 
 @Composable
-fun ColumnProductItemCategory(product: FarmerProduct, onClickListener: () -> Unit = {}) {
+fun ColumnProductItemCategory(
+    product: FarmerProduct,
+    onClickListener: () -> Unit = {}
+) {
     var liked by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -118,7 +123,7 @@ fun ColumnProductItemCategory(product: FarmerProduct, onClickListener: () -> Uni
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(Color.White),
-        onClick = { onClickListener }
+        onClick = { onClickListener() }
     ) {
 
         var productImages by remember { mutableStateOf<ByteArray?>(null) }

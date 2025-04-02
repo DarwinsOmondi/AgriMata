@@ -45,7 +45,7 @@ class AgriMataClientAuth : ViewModel() {
                     password = userPassword
                     data = buildJsonObject {
                         put("name", JsonPrimitive(userName))
-                        if (!userPhone.isNullOrBlank()) put("phone", JsonPrimitive(userPhone))
+                        if (!userPhone.isNullOrBlank()) put("phone", JsonPrimitive(userPhone.toLong()))
                         put("role", JsonPrimitive(role))
                         if (!role.isNullOrBlank()) put("role", JsonPrimitive(role))
                     }
