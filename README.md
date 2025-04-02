@@ -18,7 +18,6 @@ AgriMata is a mobile application designed to connect farmers directly with buyer
 - **Notifications**: Firebase Cloud Messaging (FCM)
 - **Weather API**: OpenWeatherMap API
 - **Architecture**: MVVM (Model-View-ViewModel)
-
 ## 📂 Project Structure
 ```
 AgriMata/
