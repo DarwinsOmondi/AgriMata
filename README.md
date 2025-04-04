@@ -60,7 +60,6 @@ AgriMata/
    const val SUPABASE_API_KEY = "your_supabase_key"
    const val OPENWEATHER_API_KEY = "your_openweather_api_key"
    ```
-
 6. Run the app:
    ```sh
    ./gradlew build
