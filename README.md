@@ -20,6 +20,7 @@ AgriMata is a mobile application designed to connect farmers directly with buyer
 - **Architecture**: MVVM (Model-View-ViewModel)
 ## 📂 Project Structure
 ```
+
 AgriMata/
 ├── app/
 │   ├── src/
