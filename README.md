@@ -8,8 +8,10 @@ AgriMata is a mobile application designed to connect farmers directly with buyer
 - 📌 **Location-Based Filtering**: Buyers can search for farm products based on location.
 - 🔔 **Notifications**: Firebase Cloud Messaging (FCM) for real-time updates.
 - 🏗 **Supabase Integration**: Used for database, real-time storage, and image uploads.
-- 
+
+  
 ## 🛠 Tech Stack
+
 
 - **Frontend**: Jetpack Compose (Kotlin)
 - **Authentication**: Firebase Authentication/Supabase Gotrue
